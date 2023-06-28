@@ -1,35 +1,35 @@
 mod image_resizer;
+mod rotate;
 mod social_plataform;
 
+use std::path::Path;
+
 use image_resizer::ImageResizer;
-use std::io;
+use social_plataform::input_social_plataform;
+
+use crate::{
+    image_resizer::{read_input_path, read_output_path},
+    rotate::rotate_image,
+};
 
 fn main() {
-    let mut input = String::new();
-    println!("enter the path of the image you want to resize:");
-    io::stdin().read_line(&mut input).unwrap();
-    let input_path = input.trim();
+    let input_path = read_input_path();
+    let output_path = read_output_path();
+    let social_plataform = input_social_plataform();
 
-    let mut output = String::new();
-    println!("Enter the name of the output file (it will be saved in the output folder): ");
-    io::stdin().read_line(&mut output).unwrap();
-    let output_path = output.trim();
-
-    let mut platform = String::new();
-    println!("Enter the name of the social media platform: ");
-    io::stdin().read_line(&mut platform).unwrap();
-    let social_plataform = platform.trim();
-
-    let resizer = match ImageResizer::new(input_path, output_path, social_plataform) {
-        Some(resizer) => resizer,
-        None => {
-            eprintln!("social network not supported");
+    let resizer = ImageResizer::new(&input_path, &output_path, &social_plataform).unwrap();
+    /* let img = match image::open(&Path::new(resizer.get_input_path())) {
+        Ok(img) => img,
+        Err(_) => {
+            eprintln!("Could not open input image '{}'", resizer.get_input_path());
             std::process::exit(1)
         }
-    };
+    }; */
 
-    if let Err(e) = resizer.resize() {
-        eprintln!("{}", e);
-        std::process::exit(1)
-    }
+    let resized_img = resizer.resize();
+    let rotated_img = rotate_image(&resized_img);
+
+    resizer.save_output_image(&rotated_img)
 }
+
+
