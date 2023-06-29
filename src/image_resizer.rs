@@ -3,6 +3,7 @@ use image::{imageops, DynamicImage};
 use std::io;
 use std::path::Path;
 
+//
 pub fn read_input_path() -> String {
     let mut input = String::new();
     println!("enter the path of the image you want to resize:");
@@ -32,15 +33,13 @@ impl<'a> ImageResizer<'a> {
         let output_path = format!("output/{}", output_path_name); //será salvo numa pasta output
         match SocialPlatform::new(social_plataform_name) {
             Some(social_plataform) => Some(ImageResizer {
-                input_path,       //nome ou endereço da imagem que você modificar
-                output_path,      //local onde a imagem redimensionada é salva
-                social_plataform, //a plataforma que o usuário
+                input_path,       
+                output_path,      
+                social_plataform, 
             }),
             None => None,
         }
     }
-
-    
 
     pub fn resize(&self) -> DynamicImage {
         let img = self.load_input_image();
@@ -68,33 +67,5 @@ impl<'a> ImageResizer<'a> {
                 std::process::exit(1)
             }
         }
-    }
-
-    /* pub fn resize(&self) {
-        let img = match image::open(&Path::new(self.input_path)) {
-            Ok(img) => img,
-            Err(_) => {
-                eprintln!("Could not open input image '{}'", self.input_path);
-                std::process::exit(1)
-            }
-        };
-        let resized_img = imageops::resize(
-            &img,
-            self.social_plataform.width,
-            self.social_plataform.height,
-            imageops::FilterType::CatmullRom,
-        );
-        if let Err(_) = resized_img.save(&self.output_path) {
-            eprintln!("Could not sabe output image '{}'", self.output_path);
-            std::process::exit(1)
-        }
-    } */
-
-    pub fn get_input_path(&self) -> &'a str {
-        self.input_path
-    }
-
-    pub fn get_output_path(&self) -> &str {
-        &self.output_path
     }
 }
