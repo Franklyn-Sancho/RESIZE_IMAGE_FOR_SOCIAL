@@ -13,8 +13,8 @@ use crate::{
 };
 
 fn main() {
-    let dir_path = ".";
-    match select_file_from_dir(dir_path) {
+    let dir_path = "."; //pasta atual -> diretório raiz da aplicação
+    match select_file_from_dir(dir_path) { //retorna e controla apenas os arquivos válidos 
         Ok(input_path) => {
             println!("Selected file: {}", input_path);
             let output_path = read_output_path();

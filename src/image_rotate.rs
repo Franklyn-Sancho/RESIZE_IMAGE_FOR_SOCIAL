@@ -34,11 +34,11 @@ fn ask_rotation() -> Rotation {
     println!("Choose the rotation option: ");
     println!("1 - Rotate 90 degrees to the right");
     println!("2 - Rotate 90 degrees to the left");
-    println!("3 - Rotate 180 degrees");
+    println!("3 - Rotate HalfCircle");
     io::stdin().read_line(&mut rotation).unwrap();
     let rotation = rotation.trim();
 
-    //o enum Rotation é chamado
+    //o enum Rotation é chamado no operador match
     match rotation {
         "1" => Rotation::Right90,
         "2" => Rotation::Left90,
