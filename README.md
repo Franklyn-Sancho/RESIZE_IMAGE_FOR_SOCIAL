@@ -1,6 +1,6 @@
 # RESIZE_IMAGE_FOR_SOCIAL
 
-Nesta aplicação escrita em rust, você pode redimencionar imagens para se adequar as redes sociais. 
+Nesta aplicação escrita em rust, você pode redimensionar imagens para se adequar as redes sociais. 
 
 ## Funcionalidades
 * Redimensione imagens para se adequar aos requisitos de tamanho de diferentes redes sociais, como Facebook, Instagram, Twitter e Linkedin
