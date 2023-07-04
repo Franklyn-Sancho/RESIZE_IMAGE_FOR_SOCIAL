@@ -1,15 +1,16 @@
+//image_resizer
 use crate::social_plataform::SocialPlatform;
 use image::{imageops, DynamicImage};
 use std::io;
 use std::path::Path;
 
-//Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar
+/* //Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar
 pub fn read_input_path() -> String {
     let mut input = String::new();
     println!("enter the path of the image you want to resize:");
     io::stdin().read_line(&mut input).unwrap();
     input.trim().to_string()
-}
+} */
 
 //Lê o caminho de saída para salvar a imagem
 pub fn read_output_path() -> String {
@@ -19,13 +20,14 @@ pub fn read_output_path() -> String {
     output.trim().to_string()
 }
 
+
 //estrutura do recurso de resize => valor de entrada, valor de saída e a rede social desejada 
 pub struct ImageResizer<'a> {
     input_path: &'a str,
     output_path: String,
     social_plataform: SocialPlatform,
 }
-
+//image_resizer.rs
 impl<'a> ImageResizer<'a> {
     pub fn new(
         input_path: &'a str,

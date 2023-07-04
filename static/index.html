@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Resizer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Image Resizer</h1>
+    </header>
+    <main>
+      <form
+        id="resize-form"
+        ,
+        action="/resize"
+        ,
+        method="get"
+      >
+        <label for="input-path">Input Path:</label>
+        <!-- <input type="file" id="input-file" name="input-file" /><br /><br /> -->
+        <input type="text" id="input-path" name="input_path" /><br /><br />
+        <label for="output-path">Output Path:</label>
+        <input
+          type="text"
+          id="output-path"
+          name="output_path_name"
+        /><br /><br />
+        <label for="social-platform">Social Platform:</label>
+        <select id="social-platform" name="social_platform_name">
+          <option value="Facebook">Facebook</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Twitter">Twitter</option>
+          <option value="Linkedin">LinkedIn</option></select
+        ><br /><br />
+        <input type="submit" value="Resize Image" />
+      </form>
+      <div id="result"></div>
+    </main>
+    <footer>
+      <p>Created by Your Name</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
