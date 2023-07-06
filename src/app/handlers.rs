@@ -1,13 +1,54 @@
 //handlers.rs
-use std::{collections::HashMap};
+
+use actix_files::NamedFile;
+use actix_web::{web, Error, HttpResponse};
+use futures::{StreamExt, TryStreamExt};
+use serde_derive::Deserialize;
 
 use crate::image_resizer::ImageResizer;
-use actix_web::{web, HttpRequest, HttpResponse, Responder};
 
+#[derive(Deserialize)]
+pub struct ResizeRequest {
+    input_data: String,
+    output_path_name: String,
+    social_platform_name: String,
+}
 
+pub async fn resize_image(req: web::Json<ResizeRequest>) -> Result<HttpResponse, Error> {
+    let input_data = base64::decode(&req.input_data).unwrap();
+    let output_path_name = &req.output_path_name;
+    let social_platform_name = &req.social_platform_name;
 
-// => rodando em ambiente local
-pub async fn resize_image(req: HttpRequest) -> impl Responder {
+    println!("Valor recebido em input_data: {:?}", req.input_data);
+
+    // Carregar a imagem a partir dos dados
+    let img = image::load_from_memory(&input_data).unwrap();
+
+    // Criar um objeto ImageResizer
+    let resizer = ImageResizer::new(input_data, output_path_name, social_platform_name);
+
+    if let Some(resizer) = resizer {
+        // Redimensionar a imagem
+        let resized_img = resizer.resize(&img);
+
+        // Salvar a imagem redimensionada
+        resizer.save_output_image(&resized_img);
+
+        // Retornar uma resposta de sucesso
+        Ok(HttpResponse::Ok().body("Image resized successfully"))
+    } else {
+        Ok(HttpResponse::BadRequest().body("Invalid parameters"))
+    }
+}
+
+pub async fn download_image(req: web::Path<String>) -> Result<NamedFile, Error> {
+    let filename = req.into_inner();
+    let filepath = format!("output/{}", filename);
+    Ok(NamedFile::open(filepath)?)
+}
+
+//lê o arquivo direto do computador
+/* pub async fn resize_image(req: HttpRequest) -> impl Responder {
     let query: web::Query<HashMap<String, String>> =
         web::Query::from_query(req.query_string()).unwrap();
 
@@ -33,8 +74,4 @@ pub async fn resize_image(req: HttpRequest) -> impl Responder {
     } else {
         HttpResponse::BadRequest().body("Parâmetros inválidos")
     }
-}
-
-/* async fn resize_image(mut payload: Multipart) -> Result<HttpResponse, dyn Error> {
-     //Lê o arquivo enviado pelo cliente
 } */

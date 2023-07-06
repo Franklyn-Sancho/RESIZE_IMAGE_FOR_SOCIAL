@@ -9,16 +9,10 @@
       <h1>Image Resizer</h1>
     </header>
     <main>
-      <form
-        id="resize-form"
-        ,
-        action="/resize"
-        ,
-        method="get"
-      >
+      <form id="resize-form" , action="/resize" , method="post">
         <label for="input-path">Input Path:</label>
-        <!-- <input type="file" id="input-file" name="input-file" /><br /><br /> -->
-        <input type="text" id="input-path" name="input_path" /><br /><br />
+        <input type="file" id="input-file" name="input_data" /><br /><br />
+        <!-- <input type="text" id="input-path" name="input_path" /><br /><br /> -->
         <label for="output-path">Output Path:</label>
         <input
           type="text"
@@ -37,7 +31,7 @@
       <div id="result"></div>
     </main>
     <footer>
-      <p>Created by Your Name</p>
+      <p>Frank Sanc</p>
     </footer>
 
     <script src="script.js"></script>

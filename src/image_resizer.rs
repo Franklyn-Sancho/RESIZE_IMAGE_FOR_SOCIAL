@@ -2,7 +2,6 @@
 use crate::social_plataform::SocialPlatform;
 use image::{imageops, DynamicImage};
 use std::io;
-use std::path::Path;
 
 /* //Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar
 pub fn read_input_path() -> String {
@@ -20,38 +19,37 @@ pub fn read_output_path() -> String {
     output.trim().to_string()
 }
 
-
-//estrutura do recurso de resize => valor de entrada, valor de saída e a rede social desejada 
-pub struct ImageResizer<'a> {
-    input_path: &'a str,
+//estrutura do recurso de resize => valor de entrada, valor de saída e a rede social desejada
+pub struct ImageResizer {
+    input_data: Vec<u8>,
     output_path: String,
     social_plataform: SocialPlatform,
 }
 //image_resizer.rs
-impl<'a> ImageResizer<'a> {
+impl ImageResizer {
     pub fn new(
-        input_path: &'a str,
+        input_data: Vec<u8>,
         output_path_name: &str,
         social_plataform_name: &str,
-    ) -> Option<ImageResizer<'a>> {
-        let output_path = format!("output/{}", output_path_name); //será salvo na pasta output do diretório raiz 
+    ) -> Option<ImageResizer> {
+        let output_path = format!("output/{}", output_path_name); //será salvo na pasta output do diretório raiz
         match SocialPlatform::new(social_plataform_name) {
             Some(social_plataform) => Some(ImageResizer {
-                input_path,       
-                output_path,      
-                social_plataform, 
+                input_data,
+                output_path,
+                social_plataform,
             }),
             None => None,
         }
     }
 
-    pub fn resize(&self) -> DynamicImage {
-        let img = self.load_input_image();
+    pub fn resize(&self, img: &DynamicImage) -> DynamicImage {
+        /* let img = self.load_input_image(); */
         let resized_img = imageops::resize(
-            &img, //guarda a imagem que foi salva na função load_input_image
+            img,
             self.social_plataform.width, //referencia a largura da estrutura SocialPlataform
             self.social_plataform.height, //referencia a altura da estrutura SocialPlatform
-            imageops::FilterType::CatmullRom, //escolhi um filtro que equilibra qualidade e velicocidade
+            imageops::FilterType::Lanczos3, //escolhi um filtro que equilibra qualidade e velicocidade
         );
         DynamicImage::ImageRgba8(resized_img)
     }
@@ -64,8 +62,8 @@ impl<'a> ImageResizer<'a> {
         }
     }
 
-    //lê a imagem antes de salvar no output 
-    fn load_input_image(&self) -> DynamicImage {
+    //lê a imagem antes de salvar no output
+    /* fn load_input_image(&self) -> DynamicImage {
         match image::open(&Path::new(self.input_path)) {
             Ok(img) => img,
             Err(_) => {
@@ -73,5 +71,5 @@ impl<'a> ImageResizer<'a> {
                 std::process::exit(1)
             }
         }
-    }
+    } */
 }
