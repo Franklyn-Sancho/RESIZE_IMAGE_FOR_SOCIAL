@@ -3,15 +3,15 @@ use crate::social_plataform::SocialPlatform;
 use image::{imageops, DynamicImage};
 use std::io;
 
-/* //Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar
+//Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar (interface cli)
 pub fn read_input_path() -> String {
     let mut input = String::new();
     println!("enter the path of the image you want to resize:");
     io::stdin().read_line(&mut input).unwrap();
     input.trim().to_string()
-} */
+}
 
-//Lê o caminho de saída para salvar a imagem
+//Lê o caminho de saída para salvar a imagem (interface cli)
 pub fn read_output_path() -> String {
     let mut output = String::new();
     println!("Enter the name of the output file (it will be saved in the output folder): ");
@@ -44,7 +44,6 @@ impl ImageResizer {
     }
 
     pub fn resize(&self, img: &DynamicImage) -> DynamicImage {
-        /* let img = self.load_input_image(); */
         let resized_img = imageops::resize(
             img,
             self.social_plataform.width, //referencia a largura da estrutura SocialPlataform
@@ -61,15 +60,4 @@ impl ImageResizer {
             std::process::exit(1)
         }
     }
-
-    //lê a imagem antes de salvar no output
-    /* fn load_input_image(&self) -> DynamicImage {
-        match image::open(&Path::new(self.input_path)) {
-            Ok(img) => img,
-            Err(_) => {
-                eprintln!("Could not open input image '{}'", self.input_path);
-                std::process::exit(1)
-            }
-        }
-    } */
 }
