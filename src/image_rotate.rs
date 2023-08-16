@@ -1,25 +1,26 @@
+use actix_web::Responder;
 use image::DynamicImage;
+use serde_derive::Deserialize;
+use std::str::FromStr;
 use std::io;
 
-
+#[derive(Deserialize, Clone)]
 pub enum Rotation {
+    None,
     Right90,
     Left90,
     HalfCircle,
 }
 
+
 //método principal do recurso de rotacionar as imagens
-pub fn rotate_image(img: &DynamicImage) -> DynamicImage {
-    if ask_to_rotate() {
-        let rotation = ask_rotation();
-        apply_rotation(img, rotation)
-    } else {
-        img.clone()
-    }
+pub fn rotate_image(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
+    apply_rotation(img, rotation)
+
 }
 
 //após redimencionar a imagem, essa função é retornado para o usuário, perguntando se ele quer rotacionar
-fn ask_to_rotate() -> bool {
+pub fn ask_to_rotate() -> bool {
     let mut to_rotate = String::new();
     println!("Do you want to rotate image (yes/no): ");
     io::stdin().read_line(&mut to_rotate).unwrap();
@@ -28,7 +29,7 @@ fn ask_to_rotate() -> bool {
 }
 
 //ao digitar "yes", este método será invocado
-fn ask_rotation() -> Rotation {
+pub fn ask_rotation() -> Rotation {
     let mut rotation = String::new();
     //melhorar as opções para algo mais intuitivo
     println!("Choose the rotation option: ");
@@ -53,6 +54,7 @@ fn ask_rotation() -> Rotation {
 //o método que aplica a rotação
 fn apply_rotation(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
     match rotation {
+        Rotation::None => img.clone(),
         Rotation::Right90 => img.rotate90(),
         Rotation::Left90 => img.rotate270(),
         Rotation::HalfCircle => img.rotate180(),
