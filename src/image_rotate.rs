@@ -1,7 +1,5 @@
-use actix_web::Responder;
 use image::DynamicImage;
 use serde_derive::Deserialize;
-use std::str::FromStr;
 use std::io;
 
 #[derive(Deserialize, Clone)]

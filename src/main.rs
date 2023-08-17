@@ -14,7 +14,7 @@ fn main() {
 
     if args.contains(&"--web".to_string()) {
         // Iniciar a versão para web do programa
-        run_web();
+        let _ = run_web();
     } else {
         run_cli();
     }

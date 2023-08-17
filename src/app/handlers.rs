@@ -1,20 +1,30 @@
 //handlers.rs
 
+
 use actix_files::NamedFile;
-use actix_web::{web, Error, HttpResponse, Responder};
+use actix_web::{error, web, Error, HttpResponse};
 use image::DynamicImage;
 use serde_derive::Deserialize;
+use uuid::Uuid;
 
-use crate::{image_resizer::ImageResizer, image_rotate::{Rotation, self}};
+use crate::{
+    image_resizer::ImageResizer,
+    image_rotate::{self, Rotation},
+};
 
 #[derive(Deserialize)]
-pub struct ResizeRotateRequest {
+pub struct ResizeRequest {
     input_data: String,
     output_path_name: String,
     social_platform_name: String,
-    rotation: Option<String>,
 }
 
+#[derive(Deserialize)]
+pub struct RotateRequest {
+    input_data: String,
+    output_path_name: String,
+    rotation: Option<String>,
+}
 
 //decodifica os dados de entrada
 fn decode_input_data(input_data: &str) -> Vec<u8> {
@@ -42,11 +52,64 @@ fn resize_image_data(input_data: &[u8], resizer: &ImageResizer) -> DynamicImage 
 
 pub async fn download_image(req: web::Path<String>) -> Result<NamedFile, Error> {
     let filename = req.into_inner();
-    let filepath = format!("output/{}", filename);
+    let filepath = format!("/tmp/{}", filename);
     Ok(NamedFile::open(filepath)?)
 }
 
-async fn resize_image(req: &ResizeRotateRequest) -> Result<DynamicImage, HttpResponse> {
+pub async fn rotate_handler(
+    req: web::Json<RotateRequest>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let input_data = decode_input_data(&req.input_data);
+    let img = image::load_from_memory(&input_data).unwrap();
+
+    if let Some(rotation) = &req.rotation {
+        let rotation = match rotation.as_str() {
+            "None" => Rotation::None,
+            "Right90" => Rotation::Right90,
+            "Left90" => Rotation::Left90,
+            "HalfCircle" => Rotation::HalfCircle,
+            _ => {
+                return Err(error::ErrorBadRequest("Valor de rotação inválido"));
+            }
+        };
+
+        let rotated_img = image_rotate::rotate_image(&img, rotation);
+        let filename = format!("rotated_image_{}.jpg", Uuid::new_v4());
+        let filepath = format!("/tmp/{}", filename);
+        rotated_img.save(filepath).unwrap();
+        // Retornar uma resposta de sucesso com o nome do arquivo da imagem
+        Ok(HttpResponse::Ok().json(filename))
+    } else {
+        Ok(HttpResponse::Ok().finish())
+    }
+}
+
+pub async fn resize_handler(
+    req: web::Json<ResizeRequest>,
+) -> Result<HttpResponse, actix_web::Error> {
+    // Redimensionar a imagem
+    let input_data = decode_input_data(&req.input_data);
+    let resizer = create_resizer(
+        input_data.clone(),
+        &req.output_path_name,
+        &req.social_platform_name,
+    );
+
+    if let Some(resizer) = resizer {
+        // Redimensionar a imagem
+        let resized_img = resize_image_data(&input_data, &resizer);
+        // Salvar a imagem final em um local temporário no servidor
+        let filename = format!("resized_image_{}.jpg", Uuid::new_v4());
+        let filepath = format!("/tmp/{}", filename);
+        resized_img.save(filepath).unwrap();
+        // Retornar uma resposta de sucesso com o nome do arquivo da imagem
+        Ok(HttpResponse::Ok().json(filename))
+    } else {
+        return Err(error::ErrorBadRequest("Parâmetros inválidos"));
+    }
+}
+
+/* async fn resize_image(req: &ResizeRotateRequest) -> Result<DynamicImage, HttpResponse> {
     let input_data = decode_input_data(&req.input_data);
     let resizer = create_resizer(
         input_data.clone(),
@@ -62,31 +125,6 @@ async fn resize_image(req: &ResizeRotateRequest) -> Result<DynamicImage, HttpRes
         Err(HttpResponse::BadRequest().body("Parâmetros inválidos"))
     }
 }
-
-async fn rotate_image(
-    req: &ResizeRotateRequest,
-    img: DynamicImage,
-) -> Result<DynamicImage, HttpResponse> {
-    // Verifique se a rotação é necessária
-    if let Some(rotation) = &req.rotation {
-        // Se a rotação não for None, converta-a em uma constante Rotation
-        let rotation = match rotation.as_str() {
-            "None" => Rotation::None,
-            "Right90" => Rotation::Right90,
-            "Left90" => Rotation::Left90,
-            "HalfCircle" => Rotation::HalfCircle,
-            _ => return Err(HttpResponse::BadRequest().body("Valor de rotação inválido")),
-        };
-
-        // Rotacionar a imagem
-        let rotated_img = image_rotate::rotate_image(&img, rotation);
-        Ok(rotated_img)
-    } else {
-        // O campo `rotation` está vazio, então apenas retorne a imagem original
-        Ok(img)
-    }
-}
-
 
 
 pub async fn resize_rotate_handler(req: web::Json<ResizeRotateRequest>) -> impl Responder {
@@ -113,4 +151,4 @@ pub async fn resize_rotate_handler(req: web::Json<ResizeRotateRequest>) -> impl 
 
     // Retornar uma resposta de sucesso
     HttpResponse::Ok().body("Imagem processada com sucesso")
-}
+} */

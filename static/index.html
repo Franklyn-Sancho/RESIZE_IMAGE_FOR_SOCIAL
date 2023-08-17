@@ -9,16 +9,13 @@
       <h1>Image Resizer</h1>
     </header>
     <main>
-      <form id="resize-form" , action="/resize" , method="post">
-        <label for="input-path">Input Path:</label>
+      
+      <form id="resize-form" action="/resize" method="post">
+        <h2>Resize Image</h2>
+        <label for="input-file">Input File:</label>
         <input type="file" id="input-file" name="input_data" /><br /><br />
-        <!-- <input type="text" id="input-path" name="input_path" /><br /><br /> -->
         <label for="output-path">Output Path:</label>
-        <input
-          type="text"
-          id="output-path"
-          name="output_path_name"
-        /><br /><br />
+        <input type="text" id="output-path" name="output_path_name" /><br /><br />
         <label for="social-platform">Social Platform:</label>
         <select id="social-platform" name="social_platform_name">
           <option value="Facebook">Facebook</option>
@@ -26,6 +23,11 @@
           <option value="Twitter">Twitter</option>
           <option value="Linkedin">LinkedIn</option></select
         ><br /><br />
+        <input type="submit" value="Resize Image" />
+      </form>
+    
+      <form id="rotate-form" action="/rotate" method="post">
+        <h2>Rotate Image</h2>
         <label for="rotation">Rotation:</label>
         <select id="rotation" name="rotation">
           <option value="None">None</option>
@@ -33,7 +35,13 @@
           <option value="Left90">Rotate 90 degrees to the left</option>
           <option value="HalfCircle">Rotate HalfCircle</option></select
         ><br /><br />
-        <input type="submit" value="Resize Image" />
+        <input type="submit" value="Rotate Image" />
+      </form>
+      <form id="download-form" action="/download/{filename}" method="get">
+        <h2>Download Image</h2>
+        <label for="filename">Filename:</label>
+        <input type="text" id="filename" name="filename" /><br /><br />
+        <input type="submit" value="Download Image" />
       </form>
       <div id="result"></div>
     </main>

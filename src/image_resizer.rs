@@ -25,6 +25,7 @@ pub struct ImageResizer {
     output_path: String,
     social_plataform: SocialPlatform,
 }
+
 //image_resizer.rs
 impl ImageResizer {
     pub fn new(
