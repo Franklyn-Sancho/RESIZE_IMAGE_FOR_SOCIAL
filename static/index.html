@@ -9,13 +9,10 @@
       <h1>Image Resizer</h1>
     </header>
     <main>
-      
       <form id="resize-form" action="/resize" method="post">
         <h2>Resize Image</h2>
         <label for="input-file">Input File:</label>
         <input type="file" id="input-file" name="input_data" /><br /><br />
-        <label for="output-path">Output Path:</label>
-        <input type="text" id="output-path" name="output_path_name" /><br /><br />
         <label for="social-platform">Social Platform:</label>
         <select id="social-platform" name="social_platform_name">
           <option value="Facebook">Facebook</option>
@@ -37,12 +34,14 @@
         ><br /><br />
         <input type="submit" value="Rotate Image" />
       </form>
+    
       <form id="download-form" action="/download/{filename}" method="get">
         <h2>Download Image</h2>
         <label for="filename">Filename:</label>
         <input type="text" id="filename" name="filename" /><br /><br />
         <input type="submit" value="Download Image" />
       </form>
+    
       <div id="result"></div>
     </main>
     <footer>

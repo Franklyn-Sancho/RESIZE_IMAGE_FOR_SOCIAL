@@ -1,10 +1,9 @@
 function readFormData() {
     let imageFile = document.getElementById("input-file").files[0];
-    let outputPathName = document.getElementById("output-path").value;
     let socialPlatformName = document.getElementById("social-platform").value;
     let rotation = document.getElementById("rotation").value;
 
-    return { imageFile, outputPathName, socialPlatformName, rotation };
+    return { imageFile, socialPlatformName, rotation };
 }
 
 //converter o arquivo de imagem como uma string base64
@@ -39,33 +38,29 @@ async function sendRotateRequest(data) {
     }).then((response) => response.text());
 }
 
-document.getElementById("store-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const response = await fetch("/store_image", {
-      method: "POST",
-      body: formData,
-    });
-    const imageFilename = await response.text();
-    document.getElementById("resize-image-filename").value = imageFilename;
-    document.getElementById("rotate-image-filename").value = imageFilename;
-  });
+async function sendDownloadRequest(filename) {
+    return fetch(`/download/${filename}`, {
+        method: "GET",
+    }).then((response) => response.blob());
+}
 
 document.getElementById("resize-form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
     // Ler os dados do formulário
-    let { imageFile, outputPathName, socialPlatformName } = readFormData();
+    let { imageFile,  socialPlatformName } = readFormData();
+    console.log(imageFile,  socialPlatformName);
 
     // Codificar o arquivo de imagem como uma string base64
     let imageData = await encodeImageFile(imageFile);
 
     let data = {
         input_data: imageData,
-        output_path_name: outputPathName,
         social_platform_name: socialPlatformName,
     };
 
+
+    
     // Enviar os dados do formulário como uma solicitação POST
     let text = await sendResizeRotateRequest(data);
 
