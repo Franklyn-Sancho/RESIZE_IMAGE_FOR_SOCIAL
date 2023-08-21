@@ -6,7 +6,7 @@ use crate::{
 };
 
 pub fn run_cli() {
-    let dir_path = "input"; //pasta atual -> diretório raiz da aplicação
+    let dir_path = "."; //pasta atual -> diretório raiz da aplicação
     match select_file_from_dir(dir_path) {
         //retorna e controla apenas os arquivos válidos
         Ok(input_data) => {
