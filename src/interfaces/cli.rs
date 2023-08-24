@@ -13,10 +13,16 @@ pub fn run_cli() {
             println!("Selected file: {}", input_data);
             let mut output_path = read_output_path();
             let social_plataform = input_social_plataform();
-            let input_data = std::fs::read(input_data).unwrap();
+            let input_data = match std::fs::read(input_data) {
+                Ok(data) => data,
+                Err(e) => {
+                    eprintln!("Error reading file: {}", e);
+                    return;
+                }
+            };
             output_path.push_str(".jpg");
             let img = image::load_from_memory(&input_data).unwrap();
-            let resizer = ImageResizer::new(input_data, &output_path, &social_plataform).unwrap();
+            let resizer = ImageResizer::new(&input_data, &output_path, &social_plataform).unwrap();
 
             let resized_img = resizer.resize(&img);
             if image_rotate::ask_to_rotate() {

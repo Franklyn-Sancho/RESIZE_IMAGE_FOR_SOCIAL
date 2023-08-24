@@ -14,10 +14,10 @@ pub fn encode_input_data(input_data: &[u8]) -> String {
 }
 
 //cria um objeto ImageResizer
-pub fn create_resizer(
-    input_data: Vec<u8>,
+pub fn create_resizer<'a>(
+    input_data: &'a [u8],
     social_plataform_name: &str,
-) -> Option<ImageResizer> {
+) -> Option<ImageResizer<'a>> {
     let filename = format!("resized_image_{}.jpg", Uuid::new_v4());
     let output_path = format!("/tmp/{}", filename);
     ImageResizer::new(input_data, &output_path, social_plataform_name)
@@ -34,5 +34,9 @@ pub fn read_image_data(filename: &str) -> Vec<u8> {
     std::fs::read(filepath).unwrap()
 }
 
-//handlers
+pub fn save_image(image: &image::DynamicImage, filename: &str) {
+    let filepath = format!("/tmp/{}", filename);
+    image.save(filepath).unwrap()
+}
+
 

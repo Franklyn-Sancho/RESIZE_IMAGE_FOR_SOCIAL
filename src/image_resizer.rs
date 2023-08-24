@@ -20,20 +20,20 @@ pub fn read_output_path() -> String {
 }
 
 //estrutura do recurso de resize => valor de entrada, valor de saída e a rede social desejada
-pub struct ImageResizer {
-    input_data: Vec<u8>,
+pub struct ImageResizer<'a> {
+    input_data: &'a [u8],
     output_path: String,
     social_plataform: SocialPlatform,
 }
 
 //image_resizer.rs
-impl ImageResizer {
+impl <'a> ImageResizer<'a> {
     pub fn new(
-        input_data: Vec<u8>,
+        input_data: &'a [u8],
         output_path_name: &str,
         social_plataform_name: &str,
-    ) -> Option<ImageResizer> {
-        let output_path = format!("output/{}", output_path_name); //será salvo na pasta output do diretório raiz
+    ) -> Option<ImageResizer<'a>> {
+        let output_path = format!("output/{}", output_path_name);
         match SocialPlatform::new(social_plataform_name) {
             Some(social_plataform) => Some(ImageResizer {
                 input_data,

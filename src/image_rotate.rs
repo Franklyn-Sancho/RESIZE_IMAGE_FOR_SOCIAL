@@ -10,7 +10,6 @@ pub enum Rotation {
     HalfCircle,
 }
 
-
 //método principal do recurso de rotacionar as imagens
 pub fn rotate_image(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
     apply_rotation(img, rotation)
@@ -23,10 +22,16 @@ pub fn ask_to_rotate() -> bool {
     println!("Do you want to rotate image (yes/no): ");
     io::stdin().read_line(&mut to_rotate).unwrap();
     let to_rotate = to_rotate.trim();
-    to_rotate == "yes" //caso sim, ask_rotation é chamado
+    match to_rotate {
+        "yes" => true,
+        "no" => false,
+        _ => {
+            eprintln!("Invalid input. Please enter 'yes' or 'no'.");
+            ask_to_rotate()
+        }
+    }
 }
 
-//ao digitar "yes", este método será invocado
 pub fn ask_rotation() -> Rotation {
     let mut rotation = String::new();
     //melhorar as opções para algo mais intuitivo
