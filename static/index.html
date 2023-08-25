@@ -6,37 +6,36 @@
   </head>
   <body>
     <header>
-      <h1>Image Resizer</h1>
+      <h1>Image Resizer For Social Plataform</h1>
     </header>
     <main>
-      <form id="rotate-resize-form" action="/rotate-resize" method="post">
-        <h2>Rotate and Resize Image</h2>
-        <label for="input-file">Input File:</label>
-        <input type="file" id="input-file" name="input_data" /><br /><br />
-        <label for="rotation">Rotation:</label>
-        <select id="rotation" name="rotation">
-          <option value="None">None</option>
-          <option value="Right90">Rotate 90 degrees to the right</option>
-          <option value="Left90">Rotate 90 degrees to the left</option>
-          <option value="HalfCircle">Rotate HalfCircle</option></select
-        ><br /><br />
-        <label for="social-platform">Social Platform:</label>
-        <select id="social-platform" name="social_platform_name">
-          <option value="Facebook">Facebook</option>
-          <option value="Instagram">Instagram</option>
-          <option value="Twitter">Twitter</option>
-          <option value="Linkedin">LinkedIn</option></select
-        ><br /><br />
-        <input type="submit" value="Rotate and Resize Image" />
-      </form>
-    
-      <form id="download-form" action="/download/{filename}" method="get">
-        <h2>Download Image</h2>
-        <label for="filename">Filename:</label>
-        <input type="text" id="filename" name="filename" /><br /><br />
-        <input type="submit" value="Download Image" />
-      </form>
-    
+      <!-- Add form container element -->
+      <div id="form-container">
+        <form id="rotate-resize-form" action="/rotate-resize" method="post">
+          <h2>Resize Your Image</h2>
+          <label for="input-file">Input File:</label>
+          <input type="file" id="input-file" name="input_data" /><br /><br />
+          <label for="rotation">Rotation:</label>
+          <select id="rotation" name="rotation">
+            <option value="None">None</option>
+            <option value="Right90">Rotate Right</option>
+            <option value="Left90">Rotate Left</option>
+            <option value="HalfCircle">Rotate HalfCircle</option></select
+          ><br /><br />
+          <label for="social-platform">Social Platform:</label>
+          <select id="social-platform" name="social_platform_name">
+            <option value="Facebook">Facebook</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Twitter">Twitter</option>
+            <option value="Linkedin">LinkedIn</option></select
+          ><br /><br />
+          <input type="submit" value="Download" />
+        </form>
+
+        <!-- Preview image -->
+        <img id="preview-image" src="" alt="" />
+      </div>
+
       <div id="result"></div>
     </main>
     <footer>
