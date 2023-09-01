@@ -35,15 +35,25 @@
             <option value="Twitter">Twitter</option>
             <option value="Linkedin">LinkedIn</option></select
           ><br /><br />
+          <!-- Add conversion options -->
+          <label for="conversion-format">Conversion Format:</label>
+          <select id="conversion-format" name="format">
+            <option value="">None</option>
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option></select
+          ><br /><br />
+          <!-- End of conversion options -->
           <input type="submit" value="Download" />
         </form>
-
+    
         <!-- Preview image -->
         <img id="preview-image" src="" alt="" />
       </div>
-
+    
       <div id="result"></div>
     </main>
+    
+    
     <footer>
       <p>Created By Frank Sanc</p>
     </footer>

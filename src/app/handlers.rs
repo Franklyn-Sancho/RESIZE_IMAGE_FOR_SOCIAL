@@ -2,6 +2,7 @@
 
 use actix_files::NamedFile;
 use actix_web::{error, web, Error, HttpResponse};
+use image::ImageFormat;
 use serde_derive::Deserialize;
 use uuid::Uuid;
 
@@ -18,6 +19,11 @@ pub struct ResizeRequest {
     social_platform_name: String,
 }
 
+pub struct ConvertRequest {
+    input_data: String,
+    format: Option<String>
+}
+
 #[derive(Deserialize)]
 pub struct RotateRequest {
     input_data: String,
@@ -29,6 +35,7 @@ pub struct RotateAndResizeRequest {
     input_data: String,
     rotation: Option<String>,
     social_platform_name: String,
+    format: Option<String>
 }
 
 pub async fn rotate_handler(
@@ -65,7 +72,6 @@ pub async fn resize_handler(
 ) -> Result<HttpResponse, actix_web::Error> {
     // Redimensionar a imagem
     let input_data = decode_input_data(&req.input_data);
-    println!("{:?}", input_data);
     let resizer = create_resizer(&input_data, &req.social_platform_name);
 
     if let Some(resizer) = resizer {
@@ -76,6 +82,29 @@ pub async fn resize_handler(
         Err(error::ErrorBadRequest("Parâmetros inválidos"))
     }
 }
+
+pub async fn convert_handler(
+    req: web::Json<ConvertRequest>,
+    filename: &str,
+) -> Result<HttpResponse, actix_web::Error> {
+    let input_data = decode_input_data(&req.input_data);
+
+    if let Some(format) = req.format.as_deref() {
+        let extension = match format {
+            "jpeg" => ".jpeg",
+            "png" => ".png",
+            _ => return Err(error::ErrorBadRequest("Invalid conversion format")),
+        };
+
+        let img = image::load_from_memory(&input_data).unwrap();
+        let output_filename = format!("{}{}", filename, extension);
+        img.save(&output_filename).unwrap();
+        Ok(HttpResponse::Ok().json(filename))
+    } else {
+        Ok(HttpResponse::Ok().finish())
+    }
+}
+
 
 pub async fn rotate_and_resize_handler(
     req: web::Json<RotateAndResizeRequest>,
@@ -94,10 +123,17 @@ pub async fn rotate_and_resize_handler(
     });
     let _ = resize_handler(&resize_req, &filename).await;
 
+    let convert_req = web::Json(ConvertRequest {
+        input_data: encode_input_data(&read_image_data(&filename)),
+        format: req.format.clone(),
+    });
+    let _ = convert_handler(convert_req, &filename).await;
+
     let image_data = read_image_data(&filename);
 
     Ok(HttpResponse::Ok().body(image_data))
 }
+
 
 pub async fn download_image(req: web::Path<String>) -> Result<NamedFile, Error> {
     let filename = req.into_inner();

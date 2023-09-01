@@ -40,11 +40,12 @@ pub fn run_cli() {
     } else {
         resizer.save_output_image(&resized_img);
     }
+    println!("successfully processed image")
 }
 
 
 fn select_input_file() -> Result<String, Box<dyn std::error::Error>> {
-    let dir_path = ".";
+    let dir_path = "input";
     select_file_from_dir(dir_path).map_err(|e| e.into())
 }
 

@@ -2,11 +2,12 @@ function readFormData() {
   let imageFile = document.getElementById("input-file").files[0];
   let socialPlatformName = document.getElementById("social-platform").value;
   let rotation = document.getElementById("rotation").value;
+  let conversionFormat = document.getElementById("conversion-format").value;
 
   // Update preview image
   updatePreview(imageFile, rotation, socialPlatformName);
 
-  return { imageFile, socialPlatformName, rotation };
+  return { imageFile, socialPlatformName, rotation, conversionFormat };
 }
 
 function encodeImageFile(imageFile) {
@@ -91,6 +92,39 @@ function calculateScaledDimensions(dimensions) {
   return [scaledWidth, scaledHeight];
 }
 
+async function prepareRequestData() {
+  let { imageFile, socialPlatformName, rotation, toConvert, conversionFormat } = readFormData();
+  let imageData = await encodeImageFile(imageFile);
+
+  return {
+    input_data: imageData,
+    social_platform_name: socialPlatformName,
+    rotation: rotation,
+    format: conversionFormat,
+  };
+}
+
+async function downloadImage(data) {
+  const response = await sendRotateResizeRequest(data);
+  const blob = await response.blob();
+
+  const href = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = href;
+
+  const extension = {
+    jpeg: ".jpeg",
+    png: ".png",
+  }[data.format] || ".jpg";
+  const filename = `rotated_resized_image${extension}`;
+
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+}
+
+
+
 // Event listeners
 
 document
@@ -99,26 +133,9 @@ document
     event.preventDefault();
 
     // Ler os dados do formulário
-    let { imageFile, socialPlatformName, rotation } = readFormData();
+    let data = await prepareRequestData();
 
-    // Codificar o arquivo de imagem como uma string base64
-    let imageData = await encodeImageFile(imageFile);
-
-    let data = {
-      input_data: imageData,
-      social_platform_name: socialPlatformName,
-      rotation: rotation,
-    };
-
-    let response = await sendRotateResizeRequest(data);
-    let blob = await response.blob();
-
-    let url = URL.createObjectURL(blob);
-    let a = document.createElement("a");
-    a.href = url;
-    a.download = "rotated_resized_image.jpg";
-    document.body.appendChild(a);
-    a.click();
+    await downloadImage(data)
 
     document.getElementById("result").textContent =
       "Imagem baixada com sucesso!";
@@ -126,10 +143,10 @@ document
 
 const inputFile = document.querySelector("#input-file");
 inputFile.addEventListener("change", () => {
-  // Get selected file and social platform name
+  // Get selected file, social platform name and rotation
   const file = inputFile.files[0];
-  const socialPlatformName =
-    document.querySelector("#social-platform").value;
+  const socialPlatformName = document.querySelector("#social-platform").value;
+  const rotation = document.querySelector("#rotation").value;
 
   // Update preview image
   updatePreview(file, undefined, socialPlatformName);
@@ -145,16 +162,15 @@ rotationSelect.addEventListener("change", () => {
   updatePreview(file, rotation);
 });
 
-const socialPlatformSelect =
-  document.querySelector("#social-platform");
+const socialPlatformSelect = document.querySelector("#social-platform");
 socialPlatformSelect.addEventListener("change", () => {
-  // Get selected file and social platform name
+  // Get selected file, social platform name and rotation
   const file = document.querySelector("#input-file").files[0];
-  const socialPlatformName =
-    socialPlatformSelect.value;
+  const socialPlatformName = socialPlatformSelect.value;
+  const rotation = document.querySelector("#rotation").value;
 
   // Update preview image
-  updatePreview(file, undefined, socialPlatformName);
+  updatePreview(file, rotation, socialPlatformName);
 });
 
 // Server communication functions
