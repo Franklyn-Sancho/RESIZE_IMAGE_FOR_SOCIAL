@@ -2,6 +2,8 @@
 
 use std::io;
 
+use crate::utils::read_input::read_input;
+
 //Estrutura das redes sociais
 pub struct SocialPlatform {
     pub name: String, //nome da rede social
@@ -11,12 +13,7 @@ pub struct SocialPlatform {
 
 //lê a rede social que o usuário deseja
 pub fn input_social_plataform() -> String {
-    let mut platform = String::new();
-    println!(
-        "Enter the name of the social media platform: (Facebook, Instagram, Twitter ou Linkedin)"
-    );
-    io::stdin().read_line(&mut platform).unwrap();
-    platform.trim().to_string()
+    read_input("Enter the name of the social media platform: (Facebook, Instagram, Twitter ou Linkedin)")
 }
 
 // => preciso adicionar outras redes sociais

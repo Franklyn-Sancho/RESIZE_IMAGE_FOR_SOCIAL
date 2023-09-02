@@ -1,10 +1,11 @@
 mod app;
-mod file_utils;
+mod utils;
 mod image_resizer;
 mod image_rotate;
 mod social_plataform;
 mod interfaces;
 mod image_converter;
+mod image_config;
 
 use std::env;
 use interfaces::cli::run_cli;

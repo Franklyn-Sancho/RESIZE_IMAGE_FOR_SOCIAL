@@ -128,7 +128,7 @@ async function downloadImage(data) {
 // Event listeners
 
 document
-  .getElementById("rotate-resize-form")
+  .getElementById("image-form")
   .addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -138,7 +138,7 @@ document
     await downloadImage(data)
 
     document.getElementById("result").textContent =
-      "Imagem baixada com sucesso!";
+      "successfully downloaded image";
   });
 
 const inputFile = document.querySelector("#input-file");
@@ -149,7 +149,7 @@ inputFile.addEventListener("change", () => {
   const rotation = document.querySelector("#rotation").value;
 
   // Update preview image
-  updatePreview(file, undefined, socialPlatformName);
+  updatePreview(file, rotation, socialPlatformName);
 });
 
 const rotationSelect = document.querySelector("#rotation");

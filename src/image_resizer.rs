@@ -1,25 +1,16 @@
 //image_resizer
-use crate::social_plataform::SocialPlatform;
+use crate::{social_plataform::SocialPlatform, utils::read_input::read_input};
 use image::{imageops, DynamicImage};
-use std::io;
 
 //Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar (interface cli)
 pub fn read_input_path() -> String {
-    let mut input = String::new();
-    println!("enter the path of the image you want to resize:");
-    io::stdin().read_line(&mut input).unwrap();
-    input.trim().to_string()
+    read_input("Enter the file you want to resize: ")
 }
 
-//Lê o caminho de saída para salvar a imagem (interface cli)
 pub fn read_output_path() -> String {
-    let mut output = String::new();
-    println!("Enter the name of the output file (it will be saved in the output folder): ");
-    io::stdin().read_line(&mut output).unwrap();
-    output.trim().to_string()
+    read_input("Enter the name of the output file (it will be saved in the output folder): ")
 }
 
-//estrutura do recurso de resize => valor de entrada, valor de saída e a rede social desejada
 pub struct ImageResizer<'a> {
     input_data: &'a [u8],
     output_path: String,
@@ -54,7 +45,6 @@ impl <'a> ImageResizer<'a> {
         DynamicImage::ImageRgba8(resized_img)
     }
 
-    //método responsável por salvar a imagem no output (essa função é chamada no main)
     pub fn save_output_image(&self, img: &DynamicImage) {
         if let Err(_) = img.save(&self.output_path) {
             eprintln!("Could not save output image '{}'", self.output_path);

@@ -1,8 +1,8 @@
 use crate::{
-    file_utils::select_file_from_dir,
+    
     image_resizer::{read_output_path, ImageResizer},
     image_rotate::{self, rotate_image},
-    social_plataform::input_social_plataform, image_converter::{ask_to_convert, ask_conversion_format},
+    social_plataform::input_social_plataform, image_converter::{ask_to_convert, ask_conversion_format}, utils::file_utils::select_file_from_dir, image_config::set_brightness,
 };
 
 

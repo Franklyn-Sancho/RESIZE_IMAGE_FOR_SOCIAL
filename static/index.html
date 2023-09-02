@@ -12,13 +12,13 @@
   </head>
   <body>
     <header>
-      <h1>Image Resizer - Social Plataform</h1>
+      <h1>Image Editor - Social Plataform</h1>
     </header>
     <main>
       <!-- Add form container element -->
       <div id="form-container">
-        <form id="rotate-resize-form" action="/rotate-resize" method="post">
-          <h2>Resize Your Image</h2>
+        <form id="image-form" action="/rotate-resize" method="post">
+          <h2>Edit Your Image</h2>
           <label for="input-file">Input File:</label>
           <input type="file" id="input-file" name="input_data" /><br /><br />
           <label for="rotation">Rotation:</label>
@@ -27,33 +27,37 @@
             <option value="Right90">Rotate Right</option>
             <option value="Left90">Rotate Left</option>
             <option value="HalfCircle">Rotate HalfCircle</option></select
-          ><br /><br />
+          ><br />
           <label for="social-platform">Social Platform:</label>
           <select id="social-platform" name="social_platform_name">
             <option value="Facebook">Facebook</option>
             <option value="Instagram">Instagram</option>
             <option value="Twitter">Twitter</option>
             <option value="Linkedin">LinkedIn</option></select
-          ><br /><br />
+          ><br />
           <!-- Add conversion options -->
           <label for="conversion-format">Conversion Format:</label>
+          <p>this image will be saved in JPG by default</p>
+
           <select id="conversion-format" name="format">
             <option value="">None</option>
             <option value="jpeg">JPEG</option>
-            <option value="png">PNG</option></select
-          ><br /><br />
+            <option value="png">PNG</option>
+          </select>
+          
+          <br /><br />
+
           <!-- End of conversion options -->
           <input type="submit" value="Download" />
         </form>
-    
+
         <!-- Preview image -->
         <img id="preview-image" src="" alt="" />
       </div>
-    
+
       <div id="result"></div>
     </main>
-    
-    
+
     <footer>
       <p>Created By Frank Sanc</p>
     </footer>
