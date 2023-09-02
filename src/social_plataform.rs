@@ -1,7 +1,5 @@
 //struct das redes sociais
 
-use std::io;
-
 use crate::utils::read_input::read_input;
 
 //Estrutura das redes sociais

@@ -2,7 +2,7 @@ use crate::{
     
     image_resizer::{read_output_path, ImageResizer},
     image_rotate::{self, rotate_image},
-    social_plataform::input_social_plataform, image_converter::{ask_to_convert, ask_conversion_format}, utils::file_utils::select_file_from_dir, image_config::set_brightness,
+    social_plataform::input_social_plataform, image_converter::{ask_to_convert, ask_conversion_format}, utils::file_utils::select_file_from_dir, image_config::{ menu_adjust_image, ask_to_adjust_effects},
 };
 
 
@@ -20,6 +20,7 @@ pub fn run_cli() {
         std::process::exit(1);
     });
 
+    //será salvo em jpg por padrão
     if ask_to_convert() {
         let file_extension = ask_conversion_format().1;
         output_path.push_str(file_extension);
@@ -29,9 +30,17 @@ pub fn run_cli() {
     }
 
     let img = image::load_from_memory(&input_data).unwrap();
+    
+    let adjusted_img = if ask_to_adjust_effects() {
+        menu_adjust_image(&img)
+    } else {
+        img
+    };
+    
     let resizer = ImageResizer::new(&input_data, &output_path, &social_platform).unwrap();
-
-    let resized_img = resizer.resize(&img);
+    
+    let resized_img = resizer.resize(&adjusted_img);
+    
     if image_rotate::ask_to_rotate() {
         let rotation = image_rotate::ask_rotation();
         let rotated_img = rotate_image(&resized_img, rotation);
@@ -40,9 +49,9 @@ pub fn run_cli() {
     } else {
         resizer.save_output_image(&resized_img);
     }
+    
     println!("successfully processed image")
 }
-
 
 fn select_input_file() -> Result<String, Box<dyn std::error::Error>> {
     let dir_path = "input";
