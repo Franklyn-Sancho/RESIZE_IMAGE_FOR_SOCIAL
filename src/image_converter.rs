@@ -7,7 +7,7 @@ use image::ImageFormat;
 pub fn ask_to_convert() -> bool {
     loop {
         let mut to_convert = String::new();
-        println!("Do you want to convert this image (yes/no): ");
+        println!("The image will be saved in jpg, would you like to change the format? (yes/no): ");
         io::stdin().read_line(&mut to_convert).unwrap();
         let to_convert = to_convert.trim();
         match to_convert {

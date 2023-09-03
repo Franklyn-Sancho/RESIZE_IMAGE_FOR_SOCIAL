@@ -4,7 +4,7 @@ use actix_web::web;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
-        web::resource("/get-image").route(web::post().to(handlers::rotate_and_resize_handler)),
+        web::resource("/get-image").route(web::post().to(handlers::process_image_handler)),
     );
 
     cfg.service(

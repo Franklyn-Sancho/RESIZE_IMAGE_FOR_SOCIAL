@@ -2,7 +2,7 @@
 
 use actix_files::NamedFile;
 use actix_web::{error, web, Error, HttpResponse};
-use image::ImageFormat;
+use image::{ImageFormat, imageops};
 use serde_derive::Deserialize;
 use uuid::Uuid;
 
@@ -37,6 +37,7 @@ pub struct RotateAndResizeRequest {
     social_platform_name: String,
     format: Option<String>
 }
+
 
 pub async fn rotate_handler(
     req: web::Json<RotateRequest>,
@@ -106,7 +107,8 @@ pub async fn convert_handler(
 }
 
 
-pub async fn rotate_and_resize_handler(
+
+pub async fn process_image_handler(
     req: web::Json<RotateAndResizeRequest>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let filename = format!("new_image_{}.jpg", Uuid::new_v4());
