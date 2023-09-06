@@ -1,45 +1,50 @@
 function readFormData() {
-  let imageFile = document.getElementById("input-file").files[0];
-  let socialPlatformName = document.getElementById("social-platform").value;
-  let rotation = document.getElementById("rotation").value;
-  let conversionFormat = document.getElementById("conversion-format").value;
+  const imageFile = document.getElementById("input-file").files[0];
+  const socialPlatformName = document.getElementById("social-platform").value;
+  const rotation = document.getElementById("rotation").value;
+  const conversionFormat = document.getElementById("conversion-format").value;
+  const brightness = document.getElementById("brightness").value;
+  const contrast = document.getElementById("contrast").value;
+  const greyscale = document.getElementById("greyscale").checked;
 
-  // Update preview image
   updatePreview(imageFile, rotation, socialPlatformName);
 
-  return { imageFile, socialPlatformName, rotation, conversionFormat };
+  return { imageFile, socialPlatformName, rotation, conversionFormat, brightness, contrast, greyscale };
 }
 
-function encodeImageFile(imageFile) {
-  return new Promise((resolve) => {
-    let reader = new FileReader();
+async function encodeImageFile(imageFile) {
+  return new Promise((resolve, reject) => {
+
+    if (!imageFile) {
+      reject(new Error("No image file selected"));
+      return;
+    }
+
+    const reader = new FileReader();
     reader.readAsDataURL(imageFile);
     reader.onload = () => {
-      let imageData = reader.result.split(",")[1];
+      const imageData = reader.result.split(",")[1];
       resolve(imageData);
     };
   });
 }
 
-// Preview image functions
-
 function updatePreview(imageFile, rotation, socialPlatformName) {
-  // Create object URL from file
-  const objectURL = URL.createObjectURL(imageFile);
 
-  // Set preview image src to object URL
+  if (!imageFile) {
+    console.error("No image file selected");
+    return;
+  }
+
+  const objectURL = URL.createObjectURL(imageFile);
   const previewImage = document.querySelector("#preview-image");
   previewImage.src = objectURL;
-
-  // Apply rotation to preview image
   applyRotation(previewImage, rotation);
-
-  // Apply resizing to preview image
   applyResizing(previewImage, socialPlatformName);
 }
 
 function applyRotation(imageElement, rotation) {
-  // Define rotation map
+
   const rotationMap = {
     Right90: "rotate(90deg)",
     Left90: "rotate(-90deg)",
@@ -47,10 +52,10 @@ function applyRotation(imageElement, rotation) {
     None: "none",
   };
 
-  // Get transform value from rotation map
+
   const transformValue = rotationMap[rotation] || "none";
 
-  // Apply transform to image element
+
   imageElement.style.transform = transformValue;
 }
 
@@ -93,17 +98,19 @@ function calculateScaledDimensions(dimensions) {
 }
 
 async function prepareRequestData() {
-  let { imageFile, socialPlatformName, rotation, toConvert, conversionFormat } = readFormData();
-  let imageData = await encodeImageFile(imageFile);
+  const { imageFile, socialPlatformName, rotation, conversionFormat, brightness, contrast, greyscale } = readFormData();
+  const imageData = await encodeImageFile(imageFile);
 
   return {
     input_data: imageData,
     social_platform_name: socialPlatformName,
     rotation: rotation,
     format: conversionFormat,
+    brightness: Number(brightness),
+    contrast: Number(contrast),
+    greyscale: greyscale,
   };
 }
-
 async function downloadImage(data) {
   const response = await sendRotateResizeRequest(data);
   const blob = await response.blob();
@@ -124,59 +131,120 @@ async function downloadImage(data) {
 }
 
 
-
-// Event listeners
-
 document
   .getElementById("image-form")
   .addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    // Ler os dados do formulário
-    let data = await prepareRequestData();
+    try {
+      // Ler os dados do formulário
+      let data = await prepareRequestData();
 
-    await downloadImage(data)
+      await downloadImage(data);
 
-    document.getElementById("result").textContent =
-      "successfully downloaded image";
+      document.getElementById("result").textContent =
+        "successfully downloaded image";
+    } catch (error) {
+      console.error(error);
+      document.getElementById("result").textContent = error.message;
+    }
   });
 
-const inputFile = document.querySelector("#input-file");
-inputFile.addEventListener("change", () => {
+function updatePreviewImage() {
   // Get selected file, social platform name and rotation
-  const file = inputFile.files[0];
+  const file = document.querySelector("#input-file").files[0];
   const socialPlatformName = document.querySelector("#social-platform").value;
   const rotation = document.querySelector("#rotation").value;
 
   // Update preview image
   updatePreview(file, rotation, socialPlatformName);
-});
+}
+
+const inputFile = document.querySelector("#input-file");
+inputFile.addEventListener("change", updatePreviewImage);
 
 const rotationSelect = document.querySelector("#rotation");
-rotationSelect.addEventListener("change", () => {
-  // Get selected file and rotation
-  const file = document.querySelector("#input-file").files[0];
-  const rotation = rotationSelect.value;
-
-  // Update preview image
-  updatePreview(file, rotation);
-});
+rotationSelect.addEventListener("change", updatePreviewImage);
 
 const socialPlatformSelect = document.querySelector("#social-platform");
-socialPlatformSelect.addEventListener("change", () => {
-  // Get selected file, social platform name and rotation
-  const file = document.querySelector("#input-file").files[0];
-  const socialPlatformName = socialPlatformSelect.value;
-  const rotation = document.querySelector("#rotation").value;
+socialPlatformSelect.addEventListener("change", updatePreviewImage);
 
-  // Update preview image
-  updatePreview(file, rotation, socialPlatformName);
+function updateOutput(input, output) {
+  input.addEventListener("input", () => {
+    output.textContent = input.value;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const brightnessInput = document.querySelector("#brightness");
+  const brightnessOutput = document.querySelector("output[for=brightness]");
+  updateOutput(brightnessInput, brightnessOutput);
+
+  const contrastInput = document.querySelector("#contrast");
+  const contrastOutput = document.querySelector("output[for=contrast]");
+  updateOutput(contrastInput, contrastOutput);
 });
 
-// Server communication functions
+
+const brightnessButton = document.querySelector("#brightness-button");
+const brightnessContainer = document.querySelector("#brightness-container");
+const contrastButton = document.querySelector("#contrast-button");
+const contrastContainer = document.querySelector("#contrast-container");
+const greyscaleButton = document.querySelector("#greyscale-button");
+const greyscaleContainer = document.querySelector("#greyscale-container");
+
+// Add event listeners to brightness and contrast buttons
+function toggleContainer(container) {
+  if (container.style.display === "none") {
+    container.style.display = "block";
+  } else {
+    container.style.display = "none";
+  }
+}
+
+brightnessButton.addEventListener("click", () => {
+  toggleContainer(brightnessContainer);
+});
+
+contrastButton.addEventListener("click", () => {
+  toggleContainer(contrastContainer);
+});
+
+greyscaleButton.addEventListener("click", () => {
+  toggleContainer(greyscaleContainer);
+});
+
+// Get image file input and all inputs and buttons
+const imageFileInput = document.querySelector("#input-file");
+const inputs = document.querySelectorAll("input, button, select");
+
+// Add event listener to image file input
+function setInputsDisabled(disabled) {
+  inputs.forEach(input => {
+    input.disabled = disabled;
+  });
+}
+
+// Add event listener to image file input
+imageFileInput.addEventListener("change", () => {
+  // Check if a file is selected
+  if (imageFileInput.files.length > 0) {
+    // Enable inputs and buttons
+    setInputsDisabled(false);
+  } else {
+    // Disable inputs and buttons
+    setInputsDisabled(true);
+  }
+});
+
+// Disable inputs and buttons by default
+setInputsDisabled(true);
+
+// Enable the image file input by default
+imageFileInput.disabled = false;
 
 async function sendRotateResizeRequest(data) {
-  return fetch("/rotate-resize", {
+  return fetch("/get-image", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -185,11 +253,7 @@ async function sendRotateResizeRequest(data) {
   });
 }
 
-async function sendDownloadRequest(filename) {
-  return fetch(`/download/${filename}`, {
-    method: "GET",
-  }).then((response) => response.blob());
-}
+
 
 
 

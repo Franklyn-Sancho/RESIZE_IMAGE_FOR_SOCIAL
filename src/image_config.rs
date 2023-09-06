@@ -4,7 +4,6 @@ use image::{imageops, DynamicImage};
 
 use crate::utils::read_input::read_input;
 
-//deform, grayscale, invert, mirror
 pub enum Effect {
     Brightness,
     Contrast,

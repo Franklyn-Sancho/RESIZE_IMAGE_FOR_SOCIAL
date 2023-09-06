@@ -2,13 +2,12 @@
 
 use actix_files::NamedFile;
 use actix_web::{error, web, Error, HttpResponse};
-use image::{ImageFormat, imageops};
 use serde_derive::Deserialize;
 use uuid::Uuid;
 
 use crate::{
     app::image_utils::{create_resizer, resize_image_data},
-    image_rotate::{self, Rotation},
+    image_rotate::{self, Rotation}, image_config::{set_brightness, set_contrast, set_grayscale},
 };
 
 use super::image_utils::{decode_input_data, encode_input_data, read_image_data, save_image};
@@ -35,7 +34,18 @@ pub struct RotateAndResizeRequest {
     input_data: String,
     rotation: Option<String>,
     social_platform_name: String,
-    format: Option<String>
+    format: Option<String>,
+    brightness: Option<i32>,
+    contrast: Option<f32>,
+    greyscale:  Option<bool>,
+}
+
+#[derive(Deserialize)]
+pub struct AdjustRequest {
+    pub input_data: String,
+    pub brightness: Option<i32>,
+    pub contrast: Option<f32>,
+    pub greyscale: Option<bool>,
 }
 
 
@@ -106,11 +116,41 @@ pub async fn convert_handler(
     }
 }
 
+pub async fn adjust_handler(
+    req: web::Json<AdjustRequest>,
+    filename: &str,
+) -> Result<HttpResponse, actix_web::Error> {
+    // Imprima os valores de brilho e contraste
+    println!("Brightness: {:?}", req.brightness);
+    println!("Contrast: {:?}", req.contrast);
+
+    let input_data = decode_input_data(&req.input_data);
+    let img = image::load_from_memory(&input_data).unwrap();
+    let mut adjusted_img = img.clone();
+
+    if let Some(brightness) = req.brightness {
+        adjusted_img = set_brightness(&adjusted_img, brightness);
+    }
+
+    if let Some(contrast) = req.contrast {
+        adjusted_img = set_contrast(&adjusted_img, contrast);
+    }
+
+    if req.greyscale.unwrap_or(false) {
+        adjusted_img = set_grayscale(&adjusted_img);
+    }
+
+    save_image(&adjusted_img, filename);
+    Ok(HttpResponse::Ok().json(filename))
+}
+
+
 
 
 pub async fn process_image_handler(
     req: web::Json<RotateAndResizeRequest>,
 ) -> Result<HttpResponse, actix_web::Error> {
+    
     let filename = format!("new_image_{}.jpg", Uuid::new_v4());
 
     let rotate_req = web::Json(RotateRequest {
@@ -130,6 +170,14 @@ pub async fn process_image_handler(
         format: req.format.clone(),
     });
     let _ = convert_handler(convert_req, &filename).await;
+
+    let adjust_req = web::Json(AdjustRequest {
+        input_data: encode_input_data(&read_image_data(&filename)),
+        brightness: req.brightness.clone(),
+        contrast: req.contrast.clone(),
+        greyscale: req.greyscale.clone(),
+    });
+    let _ = adjust_handler(adjust_req, &filename).await;
 
     let image_data = read_image_data(&filename);
 

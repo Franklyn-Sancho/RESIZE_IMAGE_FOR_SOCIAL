@@ -8,7 +8,9 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap"
       rel="stylesheet"
+      
     />
+    <script src="https://kit.fontawesome.com/820428ee9c.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <header>
@@ -38,30 +40,69 @@
           <!-- Add conversion options -->
           <label for="conversion-format">Conversion Format:</label>
           <p>this image will be saved in JPG by default</p>
-
+    
           <select id="conversion-format" name="format">
             <option value="">None</option>
             <option value="jpeg">JPEG</option>
             <option value="png">PNG</option>
           </select>
-          
-          <br /><br />
 
+        <br />
+    
+        <button type="button" id="brightness-button">Brightness</button>
+        <div id="brightness-container" style="display: none;">
+          <label for="brightness">Brightness:</label>
+          <input
+            type="range"
+            id="brightness"
+            name="brightness"
+            min="-100"
+            max="100"
+            step="1"
+          />
+          <output for="brightness">0</output>
+        </div>
+        
+        <button type="button" id="contrast-button">Contrast</button>
+        <div id="contrast-container" style="display: none;">
+          <label for="contrast">Contrast:</label>
+          <input
+            type="range"
+            id="contrast"
+            name="contrast"
+            min="-100"
+            max="100"
+            step="1"
+          />
+          <output for="contrast">0</output>
+        </div>
+        
+        <button type="button" id="greyscale-button">Greyscale</button>
+        <div id="greyscale-container" style="display: none;">
+          <label for="greyscale">Greyscale:</label>
+          <input type="checkbox" id="greyscale" name="greyscale" />
+        </div>
+        
+
+          <br/><br/>
+    
           <!-- End of conversion options -->
           <input type="submit" value="Download" />
         </form>
-
+    
         <!-- Preview image -->
         <img id="preview-image" src="" alt="" />
       </div>
-
-      <div id="result"></div>
+    
+      <div id ="result"></div>
     </main>
+    
 
     <footer>
       <p>Created By Frank Sanc</p>
     </footer>
 
     <script src="script.js"></script>
+    
   </body>
 </html>
