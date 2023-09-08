@@ -1,7 +1,10 @@
+
 use image::DynamicImage;
+
 use uuid::Uuid;
 
-use crate::image_resizer::ImageResizer;
+use crate::{image_resizer::ImageResizer};
+
 
 
 //decodifica os dados de entrada
@@ -38,5 +41,7 @@ pub fn save_image(image: &image::DynamicImage, filename: &str) {
     let filepath = format!("/tmp/{}", filename);
     image.save(filepath).unwrap()
 }
+
+
 
 

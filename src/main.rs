@@ -5,7 +5,7 @@ mod image_rotate;
 mod social_plataform;
 mod interfaces;
 mod image_converter;
-mod image_config;
+mod image_adjust;
 
 use std::env;
 use interfaces::cli::run_cli;

@@ -6,6 +6,12 @@ body {
   color: white;
 }
 
+form {
+  width: 400px;
+  display: grid;
+  justify-content: center;
+}
+
 header {
   background-color: #212121;
   color: white;
@@ -70,14 +76,12 @@ input[type="submit"]:hover {
   background-color: #3e8e41;
 }
 
-/* Styles for form container */
+
 #form-container {
-  display: flex; /* Use flexbox layout */
-  background-color: #161618;
-  flex-direction: row; /* Display form elements side-by-side */
-  justify-content: center; /* Center form elements horizontally */
-  align-items: flex-start; /* Align form elements to top of container */
-  gap: 40px; /* Add gap between form elements */
+  display: flex; 
+  justify-content: space-between;
+  align-items: center; 
+  gap: 40px; 
   padding: 20px;
 }
 
@@ -94,7 +98,6 @@ input[type="submit"]:hover {
   display: flex;
 }
 
-
 #preview-image:hover {
   -webkit-transform: scale(1.1);
   -ms-transform: scale(1.1);
@@ -110,7 +113,7 @@ input[type="submit"]:hover {
   border-radius: 20px;
 }
 
-/* Estilizar o controle de brilho */
+
 #brightness {
   -webkit-appearance: none;
   width: 100%;
@@ -119,6 +122,7 @@ input[type="submit"]:hover {
   background: #d3d3d3;
   outline: none;
 }
+
 #brightness::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -136,7 +140,7 @@ input[type="submit"]:hover {
   cursor: pointer;
 }
 
-/* Estilizar o controle de contraste */
+
 #contrast {
   -webkit-appearance: none;
   width: 100%;
@@ -162,7 +166,7 @@ input[type="submit"]:hover {
   cursor: pointer;
 }
 
-/* Estilizar o botão de escala de cinza */
+
 #greyscale {
   width: auto;
   height: auto;
@@ -191,22 +195,3 @@ button {
   background-color: #313b4b;
   color: #bfbfbf;
 }
-
-
-/* #image-settings {
-  background-color: #4caf50;
-}
-
-#brightness-button {
-  background-color: #2196f3;
-}
-
-#contrast-button {
-  background-color: #f44336;
-}
-
-#greyscale-button {
-  background-color: #ffeb3b;
-} */
-
-
