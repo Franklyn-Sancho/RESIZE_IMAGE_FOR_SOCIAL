@@ -11,7 +11,8 @@ use crate::{
     image_rotate::{self},
 };
 
-use super::{image_utils::{decode_input_data, encode_input_data, read_image_data, save_image}, rotate_request::{RotateRequest, validate_and_transform_rotate_request}, convert_request::{ConvertRequest, validate_and_transform_convert_request}, resize_request::{ResizeRequest, validate_and_transform_resize_request}};
+use super::{handlers_request::{RotateRequest, validate_and_transform_rotate_request, ResizeRequest, validate_and_transform_resize_request, ConvertRequest, validate_and_transform_convert_request}, image_utils::{save_image, decode_input_data, encode_input_data, read_image_data}};
+
 
 #[derive(Deserialize)]
 pub struct RotateAndResizeRequest {
@@ -32,18 +33,6 @@ pub struct AdjustRequest {
     pub greyscale: Option<bool>,
 }
 
-
-pub fn rotate_handler(
-    req: web::Json<RotateRequest>,
-    filename: &str,
-) -> Result<HttpResponse, actix_web::Error> {
-    let (input_data, rotation) = validate_and_transform_rotate_request(&req)?;
-    let img = image::load_from_memory(&input_data).unwrap();
-    let rotated_img = image_rotate::rotate_image(&img, rotation);
-    save_image(&rotated_img, filename);
-    Ok(HttpResponse::Ok().json(filename))
-}
-
 pub fn resize_handler(
     req: &ResizeRequest,
     filename: &str,
@@ -59,14 +48,24 @@ pub fn resize_handler(
     }
 }
 
+pub fn rotate_handler(
+    req: web::Json<RotateRequest>,
+    filename: &str,
+) -> Result<HttpResponse, actix_web::Error> {
+    let (input_data, rotation) = validate_and_transform_rotate_request(&req)?;
+    let img = image::load_from_memory(&input_data).unwrap();
+    let rotated_img = image_rotate::rotate_image(&img, rotation);
+    save_image(&rotated_img, filename);
+    Ok(HttpResponse::Ok().json(filename))
+}
+
 pub fn convert_handler(
     req: web::Json<ConvertRequest>,
     filename: &str,
 ) -> Result<HttpResponse, actix_web::Error> {
     let (input_data, format) = validate_and_transform_convert_request(&req)?;
     let img = image::load_from_memory(&input_data).unwrap();
-    let output_filename = format!("{}.{}", filename, format.extensions_str()[0]);
-    img.save_with_format(&output_filename, format).unwrap();
+    img.save_with_format(filename, format).unwrap();
     Ok(HttpResponse::Ok().json(filename))
 }
 

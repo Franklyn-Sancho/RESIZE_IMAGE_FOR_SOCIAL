@@ -7,7 +7,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
         web::resource("/get-image").route(web::post().to(handlers::process_image_handler)),
     );
 
-    cfg.service(
+    /*  cfg.service(
         web::resource("/download/{filename}").route(web::get().to(handlers::download_image)),
-    );
+    ); */
 }
