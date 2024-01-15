@@ -1,15 +1,13 @@
 use image::DynamicImage;
 
-pub struct IOOperator<'a> {
-    input_data: &'a [u8],
+pub struct IOOperator {
     output_path: String,
 }
 
-impl<'a> IOOperator<'a> {
-    pub fn new(input_data: &'a [u8], output_path_name: &str) -> IOOperator<'a> {
+impl IOOperator {
+    pub fn new(output_path_name: &str) -> IOOperator {
         let output_path = format!("output/{}", output_path_name);
         IOOperator {
-            input_data,
             output_path,
         }
     }
@@ -21,3 +19,5 @@ impl<'a> IOOperator<'a> {
         }
     }
 }
+
+

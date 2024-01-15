@@ -19,7 +19,7 @@ pub fn run_cli() {
 
     let adjusted_img = image_adjust::adjust_image_effects(&resized_img);
     let rotated_img = image_rotate::rotate_if_desired(&adjusted_img);
-    let io_operator = IOOperator::new(&input_data, &output_path);
+    let io_operator = IOOperator::new(/* &input_data, */ &output_path);
     io_operator.save_output_image(&rotated_img);
 }
 
