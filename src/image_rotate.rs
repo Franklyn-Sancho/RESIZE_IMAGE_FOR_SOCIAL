@@ -13,13 +13,11 @@ pub enum Rotation {
 //método principal do recurso de rotacionar as imagens
 pub fn rotate_image(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
     apply_rotation(img, rotation)
-
 }
 
-//após redimencionar a imagem, essa função é retornado para o usuário, perguntando se ele quer rotacionar
 pub fn ask_to_rotate() -> bool {
     let mut to_rotate = String::new();
-    println!("Do you want to rotate image (yes/no): ");
+    println!("Do you want to rotate this image (yes/no): ");
     io::stdin().read_line(&mut to_rotate).unwrap();
     let to_rotate = to_rotate.trim();
     match to_rotate {
@@ -61,5 +59,14 @@ fn apply_rotation(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
         Rotation::Right90 => img.rotate90(),
         Rotation::Left90 => img.rotate270(),
         Rotation::HalfCircle => img.rotate180(),
+    }
+}
+
+pub fn rotate_if_desired(img: &DynamicImage) -> DynamicImage {
+    if ask_to_rotate() {
+        let rotation = ask_rotation();
+        rotate_image(img, rotation)
+    } else {
+        img.clone()
     }
 }

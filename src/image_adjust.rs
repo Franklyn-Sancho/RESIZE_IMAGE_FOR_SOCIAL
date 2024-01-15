@@ -81,5 +81,13 @@ pub fn choose_effect() -> Effect {
     }
 }
 
+pub fn adjust_image_effects(img: &DynamicImage) -> DynamicImage {
+    if ask_to_adjust_effects() {
+        menu_adjust_image(img)
+    } else {
+        img.clone()
+    }
+}
+
 
 

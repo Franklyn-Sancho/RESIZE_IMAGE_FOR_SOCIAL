@@ -35,3 +35,4 @@ pub fn ask_conversion_format() -> (ImageFormat, &'static str) {
     }
 }
 
+

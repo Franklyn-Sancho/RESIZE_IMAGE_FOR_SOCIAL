@@ -4,9 +4,9 @@ use crate::utils::read_input::read_input;
 
 //Estrutura das redes sociais
 pub struct SocialPlatform {
-    pub name: String, //nome da rede social
-    pub width: u32,   //largura da imagem
-    pub height: u32,  //altura da imagem
+    pub name: String, 
+    pub width: u32,   
+    pub height: u32,  
 }
 
 //lê a rede social que o usuário deseja

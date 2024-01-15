@@ -1,11 +1,8 @@
-
 use image::DynamicImage;
 
 use uuid::Uuid;
 
-use crate::{image_resizer::ImageResizer};
-
-
+use crate::image_resizer::ImageResizer;
 
 //decodifica os dados de entrada
 pub fn decode_input_data(input_data: &str) -> Vec<u8> {
@@ -17,13 +14,8 @@ pub fn encode_input_data(input_data: &[u8]) -> String {
 }
 
 //cria um objeto ImageResizer
-pub fn create_resizer<'a>(
-    input_data: &'a [u8],
-    social_plataform_name: &str,
-) -> Option<ImageResizer<'a>> {
-    let filename = format!("resized_image_{}.jpg", Uuid::new_v4());
-    let output_path = format!("/tmp/{}", filename);
-    ImageResizer::new(input_data, &output_path, social_plataform_name)
+pub fn create_resizer(social_plataform_name: &str) -> Option<ImageResizer> {
+    ImageResizer::new(social_plataform_name)
 }
 
 //redimensiona a imagem
@@ -41,7 +33,3 @@ pub fn save_image(image: &image::DynamicImage, filename: &str) {
     let filepath = format!("/tmp/{}", filename);
     image.save(filepath).unwrap()
 }
-
-
-
-

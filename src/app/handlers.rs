@@ -38,7 +38,7 @@ pub fn resize_handler(
     filename: &str,
 ) -> Result<HttpResponse, actix_web::Error> {
     let (input_data, social_platform_name) = validate_and_transform_resize_request(&req)?;
-    let resizer = create_resizer(&input_data, social_platform_name);
+    let resizer = create_resizer(social_platform_name);
     if let Some(resizer) = resizer {
         let resized_img = resize_image_data(&input_data, &resizer);
         save_image(&resized_img, filename);

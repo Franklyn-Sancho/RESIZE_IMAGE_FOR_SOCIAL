@@ -11,7 +11,33 @@ pub fn read_output_path() -> String {
     read_input("Enter the name of the output file (it will be saved in the output folder): ")
 }
 
-pub struct ImageResizer<'a> {
+pub struct ImageResizer {
+    social_platform: SocialPlatform,
+}
+
+impl ImageResizer {
+    pub fn new(social_platform_name: &str) -> Option<ImageResizer> {
+        match SocialPlatform::new(social_platform_name) {
+            Some(social_platform) => Some(ImageResizer {
+                social_platform,
+            }),
+            None => None,
+        }
+    }
+
+    pub fn resize(&self, img: &DynamicImage) -> DynamicImage {
+        let resized_img = imageops::resize(
+            img,
+            self.social_platform.width, 
+            self.social_platform.height, 
+            imageops::FilterType::Lanczos3,
+        );
+        DynamicImage::ImageRgba8(resized_img)
+    }
+}
+
+
+/* pub struct ImageResizer<'a> {
     input_data: &'a [u8],
     output_path: String,
     social_plataform: SocialPlatform,
@@ -38,8 +64,8 @@ impl <'a> ImageResizer<'a> {
     pub fn resize(&self, img: &DynamicImage) -> DynamicImage {
         let resized_img = imageops::resize(
             img,
-            self.social_plataform.width, //referencia a largura da estrutura SocialPlataform
-            self.social_plataform.height, //referencia a altura da estrutura SocialPlatform
+            self.social_plataform.width, 
+            self.social_plataform.height, 
             imageops::FilterType::Lanczos3, //escolhi um filtro que equilibra qualidade e velicocidade
         );
         DynamicImage::ImageRgba8(resized_img)
@@ -51,4 +77,4 @@ impl <'a> ImageResizer<'a> {
             std::process::exit(1)
         }
     }
-}
+} */
