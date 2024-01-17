@@ -7,8 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     app::image_utils::{create_resizer, resize_image_data},
-    image_adjust::{set_brightness, set_contrast, set_grayscale},
-    image_rotate::{self},
+    image_rotate::{self}, image_adjust::{adjust_image, Effect},
 };
 
 use super::{handlers_request::{RotateRequest, validate_and_transform_rotate_request, ResizeRequest, validate_and_transform_resize_request, ConvertRequest, validate_and_transform_convert_request}, image_utils::{save_image, decode_input_data, encode_input_data, read_image_data}};
@@ -75,23 +74,21 @@ pub async fn adjust_handler(
 ) -> Result<HttpResponse, actix_web::Error> {
     let input_data = decode_input_data(&req.input_data);
     let img = image::load_from_memory(&input_data).unwrap();
-    let mut adjusted_img = img.clone();
 
-    if let Some(brightness) = req.brightness {
-        adjusted_img = set_brightness(&adjusted_img, brightness);
-    }
-
-    if let Some(contrast) = req.contrast {
-        adjusted_img = set_contrast(&adjusted_img, contrast);
-    }
-
-    if req.greyscale.unwrap_or(false) {
-        adjusted_img = set_grayscale(&adjusted_img);
-    }
+    let adjusted_img = if let Some(brightness) = req.brightness {
+        adjust_image(&img, Effect::Brightness(brightness))
+    } else if let Some(contrast) = req.contrast {
+        adjust_image(&img, Effect::Contrast(contrast))
+    } else if req.greyscale.unwrap_or(false) {
+        adjust_image(&img, Effect::Grayscale)
+    } else {
+        img.clone()
+    };
 
     save_image(&adjusted_img, filename);
     Ok(HttpResponse::Ok().json(filename))
 }
+
 
 pub async fn process_image_handler(
     req: web::Json<RotateAndResizeRequest>,

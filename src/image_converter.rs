@@ -1,16 +1,17 @@
 //JPEG, PNG, GIF, SVG, TIFF, BMP, PDF, HEIF e HEIC
 
-use std::io;
+use crate::utils::read_input::read_input;
 
-use image::ImageFormat;
+pub fn output_name_file() -> String {
+    read_input("Enter the name of the output file (it will be saved in the output folder): ")
+}
 
 pub fn ask_to_convert() -> bool {
     loop {
-        let mut to_convert = String::new();
-        println!("The image will be saved in jpg, would you like to change the format? (yes/no): ");
-        io::stdin().read_line(&mut to_convert).unwrap();
-        let to_convert = to_convert.trim();
-        match to_convert {
+        let to_convert = read_input(
+            "The image will be saved in jpg, would you like to change the format? (yes/no): ",
+        );
+        match to_convert.to_lowercase().as_str() {
             "yes" => return true,
             "no" => return false,
             _ => eprintln!("Invalid input. Please enter 'yes' or 'no'."),
@@ -18,21 +19,26 @@ pub fn ask_to_convert() -> bool {
     }
 }
 
-pub fn ask_conversion_format() -> (ImageFormat, &'static str) {
-    loop {
-        let mut format = String::new();
-        println!("Choose the conversion format: ");
-        println!("1 - Convert to JPEG");
-        println!("2 - Convert to PNG");
-        io::stdin().read_line(&mut format).unwrap();
-        let format = format.trim();
-
-        match format {
-            "1" => return (ImageFormat::Jpeg, ".jpeg"),
-            "2" => return (ImageFormat::Png, ".png"),
-            _ => eprintln!("Invalid conversion option"),
+pub fn ask_conversion_format() -> &'static str {
+    let format =
+        read_input("Choose the conversion format: \n1 - Convert to JPEG\n2 - Convert to PNG");
+    match format.as_str() {
+        "1" => ".jpeg",
+        "2" => ".png",
+        _ => {
+            eprintln!("Invalid conversion option");
+            ask_conversion_format()
         }
     }
 }
 
-
+pub fn select_output_path_with_extension() -> String {
+    let mut output_name =
+        read_input("Enter the name of the output file (it will be saved in the output folder): ");
+    if ask_to_convert() {
+        output_name.push_str(ask_conversion_format());
+    } else {
+        output_name.push_str(".jpg");
+    }
+    output_name
+}

@@ -1,7 +1,5 @@
 use image::DynamicImage;
 
-use uuid::Uuid;
-
 use crate::image_resizer::ImageResizer;
 
 //decodifica os dados de entrada
