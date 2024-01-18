@@ -2,10 +2,6 @@
 
 use crate::utils::read_input::read_input;
 
-pub fn output_name_file() -> String {
-    read_input("Enter the name of the output file (it will be saved in the output folder): ")
-}
-
 pub fn ask_to_convert() -> bool {
     loop {
         let to_convert = read_input(
@@ -32,7 +28,7 @@ pub fn ask_conversion_format() -> &'static str {
     }
 }
 
-pub fn select_output_path_with_extension() -> String {
+pub fn select_output_name_with_extension() -> String {
     let mut output_name =
         read_input("Enter the name of the output file (it will be saved in the output folder): ");
     if ask_to_convert() {

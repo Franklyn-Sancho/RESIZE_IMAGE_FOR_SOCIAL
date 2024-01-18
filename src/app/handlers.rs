@@ -7,11 +7,17 @@ use uuid::Uuid;
 
 use crate::{
     app::image_utils::{create_resizer, resize_image_data},
-    image_rotate::{self}, image_adjust::{adjust_image, Effect},
+    image_adjust::{adjust_image, Effect},
+    image_rotate::{self},
 };
 
-use super::{handlers_request::{RotateRequest, validate_and_transform_rotate_request, ResizeRequest, validate_and_transform_resize_request, ConvertRequest, validate_and_transform_convert_request}, image_utils::{save_image, decode_input_data, encode_input_data, read_image_data}};
-
+use super::{
+    handlers_request::{
+        validate_and_transform_convert_request, validate_and_transform_resize_request,
+        validate_and_transform_rotate_request, ConvertRequest, ResizeRequest, RotateRequest,
+    },
+    image_utils::{decode_input_data, encode_input_data, read_image_data, save_image},
+};
 
 #[derive(Deserialize)]
 pub struct RotateAndResizeRequest {
@@ -37,13 +43,13 @@ pub fn resize_handler(
     filename: &str,
 ) -> Result<HttpResponse, actix_web::Error> {
     let (input_data, social_platform_name) = validate_and_transform_resize_request(&req)?;
-    let resizer = create_resizer(social_platform_name);
-    if let Some(resizer) = resizer {
-        let resized_img = resize_image_data(&input_data, &resizer);
-        save_image(&resized_img, filename);
-        Ok(HttpResponse::Ok().json(filename))
-    } else {
-        Err(error::ErrorBadRequest("Parâmetros inválidos"))
+    match create_resizer(social_platform_name) {
+        Some(resizer) => {
+            let resized_img = resize_image_data(&input_data, &resizer);
+            save_image(&resized_img, filename);
+            Ok(HttpResponse::Ok().json(filename))
+        }
+        None => Err(error::ErrorBadRequest("Parâmetros inválidos")),
     }
 }
 
@@ -52,7 +58,8 @@ pub fn rotate_handler(
     filename: &str,
 ) -> Result<HttpResponse, actix_web::Error> {
     let (input_data, rotation) = validate_and_transform_rotate_request(&req)?;
-    let img = image::load_from_memory(&input_data).unwrap();
+    let img = image::load_from_memory(&input_data)
+        .map_err(|_| error::ErrorBadRequest("Failed to load image from memory"))?;
     let rotated_img = image_rotate::rotate_image(&img, rotation);
     save_image(&rotated_img, filename);
     Ok(HttpResponse::Ok().json(filename))
@@ -63,8 +70,10 @@ pub fn convert_handler(
     filename: &str,
 ) -> Result<HttpResponse, actix_web::Error> {
     let (input_data, format) = validate_and_transform_convert_request(&req)?;
-    let img = image::load_from_memory(&input_data).unwrap();
-    img.save_with_format(filename, format).unwrap();
+    let img = image::load_from_memory(&input_data)
+        .map_err(|_| error::ErrorBadRequest("Failed to load image from memory"))?;
+    img.save_with_format(filename, format)
+        .map_err(|_| error::ErrorBadRequest("Failed to save image with format"))?;
     Ok(HttpResponse::Ok().json(filename))
 }
 
@@ -75,20 +84,16 @@ pub async fn adjust_handler(
     let input_data = decode_input_data(&req.input_data);
     let img = image::load_from_memory(&input_data).unwrap();
 
-    let adjusted_img = if let Some(brightness) = req.brightness {
-        adjust_image(&img, Effect::Brightness(brightness))
-    } else if let Some(contrast) = req.contrast {
-        adjust_image(&img, Effect::Contrast(contrast))
-    } else if req.greyscale.unwrap_or(false) {
-        adjust_image(&img, Effect::Grayscale)
-    } else {
-        img.clone()
+    let adjusted_img = match (req.brightness, req.contrast, req.greyscale) {
+        (Some(brightness), _, _) => adjust_image(&img, Effect::Brightness(brightness)),
+        (_, Some(contrast), _) => adjust_image(&img, Effect::Contrast(contrast)),
+        (_, _, Some(true)) => adjust_image(&img, Effect::Grayscale),
+        _ => img.clone(),
     };
 
     save_image(&adjusted_img, filename);
     Ok(HttpResponse::Ok().json(filename))
 }
-
 
 pub async fn process_image_handler(
     req: web::Json<RotateAndResizeRequest>,

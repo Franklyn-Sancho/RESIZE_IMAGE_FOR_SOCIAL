@@ -3,7 +3,7 @@ use std::fs;
 use super::read_input::read_input;
 
 pub fn read_input_path() -> String {
-    read_input("Enter the file you want to adjust: ")
+    read_input("Enter the image you want to adjust: ")
 }
 
 fn image_file_accept(file_name: &str) -> bool {
@@ -17,19 +17,16 @@ fn image_file_accept(file_name: &str) -> bool {
 pub fn select_file_from_dir(dir_path: &str) -> Result<String, String> {
     let files = list_file_in_dir(dir_path)?;
     println!("Accepted files:");
-    for file in &files {
-        println!("{}", file);
-    }
+    files.iter().for_each(|file| println!("{}", file));
     let input_path = loop {
-        let input = read_input_path();
-        match files.iter().find(|&file| file == &input) {
-            Some(file) => break file.to_string(),
+        match files.iter().find(|&file| file == &read_input_path()) {
+            Some(file) => break Ok(file.to_string()),
             None => {
                 eprintln!("Error: The file is not in the list of accepted files. Please try again.")
             }
         }
     };
-    Ok(input_path)
+    input_path
 }
 
 fn list_file_in_dir(dir_path: &str) -> Result<Vec<String>, String> {

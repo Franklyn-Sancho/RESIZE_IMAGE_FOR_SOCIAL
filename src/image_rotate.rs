@@ -2,6 +2,8 @@ use image::DynamicImage;
 use serde_derive::Deserialize;
 use std::io;
 
+use crate::utils::read_input::read_input;
+
 #[derive(Deserialize, Clone)]
 pub enum Rotation {
     None,
@@ -10,17 +12,13 @@ pub enum Rotation {
     HalfCircle,
 }
 
-//método principal do recurso de rotacionar as imagens
 pub fn rotate_image(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
     apply_rotation(img, rotation)
 }
 
 pub fn ask_to_rotate() -> bool {
-    let mut to_rotate = String::new();
-    println!("Do you want to rotate this image (yes/no): ");
-    io::stdin().read_line(&mut to_rotate).unwrap();
-    let to_rotate = to_rotate.trim();
-    match to_rotate {
+    let to_rotate = read_input("Do you want to rotate this image (yes/no): ");
+    match to_rotate.to_lowercase().as_str() {
         "yes" => true,
         "no" => false,
         _ => {

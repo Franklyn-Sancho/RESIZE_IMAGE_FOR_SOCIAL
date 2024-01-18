@@ -1,15 +1,7 @@
 //image_resizer
-use crate::{social_plataform::SocialPlatform, utils::read_input::read_input};
+use crate::social_plataform::SocialPlatform;
 use image::{imageops, DynamicImage};
 
-//Lê o caminho de entrada de uma imagem que o usuário deseja redimensionar (interface cli)
-/* pub fn read_input_path() -> String {
-    read_input("Enter the file you want to resize: ")
-}
-
-pub fn read_output_path() -> String {
-    read_input("Enter the name of the output file (it will be saved in the output folder): ")
-} */
 
 pub struct ImageResizer {
     social_platform: SocialPlatform,

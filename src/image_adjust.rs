@@ -1,5 +1,3 @@
-use std::io;
-
 use image::{imageops, DynamicImage};
 
 use crate::utils::read_input::read_input;
