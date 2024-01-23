@@ -12,6 +12,22 @@ function readFormData() {
   return { imageFile, socialPlatformName, rotation, conversionFormat, brightness, contrast, greyscale };
 }
 
+async function prepareRequestData() {
+  const { imageFile, socialPlatformName, rotation, conversionFormat, brightness, contrast, greyscale } = readFormData();
+  const imageData = await encodeImageFile(imageFile);
+
+  return {
+    input_data: imageData,
+    social_platform_name: socialPlatformName,
+    rotation: rotation,
+    format: conversionFormat,
+    brightness: Number(brightness),
+    contrast: Number(contrast),
+    greyscale: greyscale,
+  };
+}
+
+//FUNCTIONS FOR ENCODE IMAGE FILE
 async function encodeImageFile(imageFile) {
   return new Promise((resolve, reject) => {
 
@@ -29,6 +45,49 @@ async function encodeImageFile(imageFile) {
   });
 }
 
+
+//FUNCTIONS TO DISABLE BUTTONS 
+
+const imageFileInput = document.querySelector("#input-file");
+const inputs = document.querySelectorAll("input, button, select");
+
+// Add event listener to image file input
+function setInputsDisabled(disabled) {
+  inputs.forEach(input => {
+    input.disabled = disabled;
+  });
+}
+
+// Add event listener to image file input
+imageFileInput.addEventListener("change", () => {
+  // Check if a file is selected
+  if (imageFileInput.files.length > 0) {
+    // Enable inputs and buttons
+    setInputsDisabled(false);
+  } else {
+    // Disable inputs and buttons
+    setInputsDisabled(true);
+  }
+});
+
+// Disable inputs and buttons by default
+setInputsDisabled(true);
+
+// Enable the image file input by default
+imageFileInput.disabled = false;
+
+
+//FUNCTION FOR TO UPDATE IMAGE PREVIEW
+
+const inputFile = document.querySelector("#input-file");
+inputFile.addEventListener("change", updatePreviewImage);
+
+const rotationSelect = document.querySelector("#rotation");
+rotationSelect.addEventListener("change", updatePreviewImage);
+
+const socialPlatformSelect = document.querySelector("#social-platform");
+socialPlatformSelect.addEventListener("change", updatePreviewImage);
+
 function updatePreview(imageFile, rotation, socialPlatformName) {
 
   if (!imageFile) {
@@ -43,6 +102,7 @@ function updatePreview(imageFile, rotation, socialPlatformName) {
   applyResizing(previewImage, socialPlatformName);
 }
 
+//FUNCTIONS FOR TO APPLY ROTATION 
 function applyRotation(imageElement, rotation) {
 
   const rotationMap = {
@@ -59,6 +119,25 @@ function applyRotation(imageElement, rotation) {
   imageElement.style.transform = transformValue;
 }
 
+function updatePreviewImage() {
+  // Get selected file, social platform name and rotation
+  const file = document.querySelector("#input-file").files[0];
+  const socialPlatformName = document.querySelector("#social-platform").value;
+  const rotation = document.querySelector("#rotation").value;
+
+  // Update preview image
+  updatePreview(file, rotation, socialPlatformName);
+}
+
+
+
+function updateOutput(input, output) {
+  input.addEventListener("input", () => {
+    output.textContent = input.value;
+  });
+}
+
+//FUNCTIONS TO APPLY RESIZE ON IMAGES 
 function applyResizing(imageElement, socialPlatformName) {
   // Define social platform dimensions map
   const socialPlatformDimensionsMap = {
@@ -97,20 +176,10 @@ function calculateScaledDimensions(dimensions) {
   return [scaledWidth, scaledHeight];
 }
 
-async function prepareRequestData() {
-  const { imageFile, socialPlatformName, rotation, conversionFormat, brightness, contrast, greyscale } = readFormData();
-  const imageData = await encodeImageFile(imageFile);
 
-  return {
-    input_data: imageData,
-    social_platform_name: socialPlatformName,
-    rotation: rotation,
-    format: conversionFormat,
-    brightness: Number(brightness),
-    contrast: Number(contrast),
-    greyscale: greyscale,
-  };
-}
+
+
+//FUNCTION TO DOWNLOAD IMAGE
 async function downloadImage(data) {
   const response = await sendRotateResizeRequest(data);
   const blob = await response.blob();
@@ -150,41 +219,7 @@ document
     }
   });
 
-function updatePreviewImage() {
-  // Get selected file, social platform name and rotation
-  const file = document.querySelector("#input-file").files[0];
-  const socialPlatformName = document.querySelector("#social-platform").value;
-  const rotation = document.querySelector("#rotation").value;
-
-  // Update preview image
-  updatePreview(file, rotation, socialPlatformName);
-}
-
-const inputFile = document.querySelector("#input-file");
-inputFile.addEventListener("change", updatePreviewImage);
-
-const rotationSelect = document.querySelector("#rotation");
-rotationSelect.addEventListener("change", updatePreviewImage);
-
-const socialPlatformSelect = document.querySelector("#social-platform");
-socialPlatformSelect.addEventListener("change", updatePreviewImage);
-
-function updateOutput(input, output) {
-  input.addEventListener("input", () => {
-    output.textContent = input.value;
-  });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const brightnessInput = document.querySelector("#brightness");
-  const brightnessOutput = document.querySelector("output[for=brightness]");
-  updateOutput(brightnessInput, brightnessOutput);
-
-  const contrastInput = document.querySelector("#contrast");
-  const contrastOutput = document.querySelector("output[for=contrast]");
-  updateOutput(contrastInput, contrastOutput);
-});
-
+//FUNCTIONS FOR TO ADJUST IMAGES
 
 const brightnessButton = document.querySelector("#brightness-button");
 const brightnessContainer = document.querySelector("#brightness-container");
@@ -192,15 +227,6 @@ const contrastButton = document.querySelector("#contrast-button");
 const contrastContainer = document.querySelector("#contrast-container");
 const greyscaleButton = document.querySelector("#greyscale-button");
 const greyscaleContainer = document.querySelector("#greyscale-container");
-
-// Add event listeners to brightness and contrast buttons
-function toggleContainer(container) {
-  if (container.style.display === "none") {
-    container.style.display = "block";
-  } else {
-    container.style.display = "none";
-  }
-}
 
 brightnessButton.addEventListener("click", () => {
   toggleContainer(brightnessContainer);
@@ -214,34 +240,26 @@ greyscaleButton.addEventListener("click", () => {
   toggleContainer(greyscaleContainer);
 });
 
-// Get image file input and all inputs and buttons
-const imageFileInput = document.querySelector("#input-file");
-const inputs = document.querySelectorAll("input, button, select");
+document.addEventListener("DOMContentLoaded", () => {
+  const brightnessInput = document.querySelector("#brightness");
+  const brightnessOutput = document.querySelector("output[for=brightness]");
+  updateOutput(brightnessInput, brightnessOutput);
 
-// Add event listener to image file input
-function setInputsDisabled(disabled) {
-  inputs.forEach(input => {
-    input.disabled = disabled;
-  });
-}
-
-// Add event listener to image file input
-imageFileInput.addEventListener("change", () => {
-  // Check if a file is selected
-  if (imageFileInput.files.length > 0) {
-    // Enable inputs and buttons
-    setInputsDisabled(false);
-  } else {
-    // Disable inputs and buttons
-    setInputsDisabled(true);
-  }
+  const contrastInput = document.querySelector("#contrast");
+  const contrastOutput = document.querySelector("output[for=contrast]");
+  updateOutput(contrastInput, contrastOutput);
 });
 
-// Disable inputs and buttons by default
-setInputsDisabled(true);
+// Add event listeners to brightness and contrast buttons
+function toggleContainer(container) {
+  if (container.style.display === "none") {
+    container.style.display = "block";
+  } else {
+    container.style.display = "none";
+  }
+}
 
-// Enable the image file input by default
-imageFileInput.disabled = false;
+
 
 async function sendRotateResizeRequest(data) {
   return fetch("/get-image", {
