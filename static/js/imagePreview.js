@@ -37,7 +37,7 @@ function applyRotation(imageElement, rotation) {
     imageElement.style.transform = transformValue;
 }
 
-function updatePreviewImage() {
+export function updatePreviewImage() {
     // Get selected file, social platform name and rotation
     const file = document.querySelector("#input-file").files[0];
     const socialPlatformName = document.querySelector("#social-platform").value;

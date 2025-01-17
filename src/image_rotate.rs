@@ -17,29 +17,25 @@ pub fn rotate_image(img: &DynamicImage, rotation: Rotation) -> DynamicImage {
 }
 
 pub fn ask_to_rotate() -> bool {
-    let to_rotate = read_input("Do you want to rotate this image (yes/no): ");
-    match to_rotate.to_lowercase().as_str() {
-        "yes" => true,
-        "no" => false,
-        _ => {
-            eprintln!("Invalid input. Please enter 'yes' or 'no'.");
-            ask_to_rotate()
+    loop {
+        let to_rotate = read_input("Do you want to rotate this image (yes/no): ");
+        match to_rotate.to_lowercase().as_str() {
+            "yes" => return true,
+            "no" => return false,
+            _ => eprintln!("Invalid input. Please enter 'yes' or 'no'."),
         }
     }
 }
 
 pub fn ask_rotation() -> Rotation {
-    let mut rotation = String::new();
-    //melhorar as opções para algo mais intuitivo
     println!("Choose the rotation option: ");
     println!("1 - Rotate 90 degrees to the right");
     println!("2 - Rotate 90 degrees to the left");
     println!("3 - Rotate HalfCircle");
-    io::stdin().read_line(&mut rotation).unwrap();
-    let rotation = rotation.trim();
+    
+    let rotation = read_input("Enter the rotation option: ");
 
-    //o enum Rotation é chamado no operador match
-    match rotation {
+    match rotation.trim() {
         "1" => Rotation::Right90,
         "2" => Rotation::Left90,
         "3" => Rotation::HalfCircle,

@@ -1,17 +1,11 @@
 use crate::{
-    image_adjust::{self},
-    image_converter::select_output_name_with_extension,
-    image_resizer::ImageResizer,
-    image_rotate::{self},
-    io_operations::IOOperator,
-    social_plataform::input_social_plataform,
-    utils::file_utils::select_file_from_dir,
+    image_adjust::{self}, image_converter::select_output_name_with_extension, image_resizer::ImageResizer, image_rotate::{self}, io_operations::IOOperator, social_plataform::input_social_platform, utils::file_utils::select_file_from_dir
 };
 
 pub fn run_cli() {
     let input_file = select_input_file().expect("Failed to select input file");
     let output_path = select_output_name_with_extension();
-    let social_platform = input_social_plataform();
+    let social_platform = input_social_platform();
     let input_data = read_input_data(&input_file).expect("Failed to read input data");
 
     let img = image::load_from_memory(&input_data).unwrap();
@@ -33,5 +27,6 @@ fn select_input_file() -> Result<String, Box<dyn std::error::Error>> {
 fn read_input_data(input_file: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     std::fs::read(input_file).map_err(|e| e.into())
 }
+
 
 

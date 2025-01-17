@@ -186,6 +186,15 @@ input[type="submit"]:hover {
   padding: 10px;
 }
 
+#download-button {
+  margin-top: 20px;
+}
+
+#download-button.loading {
+  background-color: #ccc; /* Altere para uma cor que indique que está carregando */
+  pointer-events: none; /* Impede que o usuário clique enquanto está carregando */
+}
+
 button {
   border-radius: 50%;
   width: 80px;

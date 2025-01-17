@@ -3,9 +3,10 @@ use image::DynamicImage;
 use crate::image_resizer::ImageResizer;
 
 //decodifica os dados de entrada
-pub fn decode_input_data(input_data: &str) -> Vec<u8> {
-    base64::decode(input_data).unwrap()
+pub fn decode_input_data(input_data: &str) -> Result<Vec<u8>, base64::DecodeError> {
+    base64::decode(input_data)
 }
+
 
 pub fn encode_input_data(input_data: &[u8]) -> String {
     base64::encode(input_data)

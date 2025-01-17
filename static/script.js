@@ -1,4 +1,4 @@
-function readFormData() {
+/* function readFormData() {
   const imageFile = document.getElementById("input-file").files[0];
   const socialPlatformName = document.getElementById("social-platform").value;
   const rotation = document.getElementById("rotation").value;
@@ -269,7 +269,7 @@ async function sendRotateResizeRequest(data) {
     },
     body: JSON.stringify(data),
   });
-}
+} */
 
 
 

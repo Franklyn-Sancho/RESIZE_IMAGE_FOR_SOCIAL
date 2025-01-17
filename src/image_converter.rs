@@ -16,14 +16,13 @@ pub fn ask_to_convert() -> bool {
 }
 
 pub fn ask_conversion_format() -> &'static str {
-    let format =
-        read_input("Choose the conversion format: \n1 - Convert to JPEG\n2 - Convert to PNG");
-    match format.as_str() {
-        "1" => ".jpeg",
-        "2" => ".png",
-        _ => {
-            eprintln!("Invalid conversion option");
-            ask_conversion_format()
+    loop {
+        let format =
+            read_input("Choose the conversion format: \n1 - Convert to JPEG\n2 - Convert to PNG");
+        match format.as_str() {
+            "1" => return ".jpeg",
+            "2" => return ".png",
+            _ => eprintln!("Invalid conversion option. Please choose '1' or '2'."),
         }
     }
 }
@@ -31,10 +30,12 @@ pub fn ask_conversion_format() -> &'static str {
 pub fn select_output_name_with_extension() -> String {
     let mut output_name =
         read_input("Enter the name of the output file (it will be saved in the output folder): ");
+
     if ask_to_convert() {
         output_name.push_str(ask_conversion_format());
     } else {
         output_name.push_str(".jpg");
     }
+
     output_name
 }

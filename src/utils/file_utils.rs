@@ -2,31 +2,32 @@ use std::fs;
 
 use super::read_input::read_input;
 
-pub fn read_input_path() -> String {
-    read_input("Enter the image you want to adjust: ")
+pub fn read_input_path(prompt: &str) -> String {
+    read_input(prompt)
 }
 
 fn image_file_accept(file_name: &str) -> bool {
-    file_name.ends_with(".png")
-        || file_name.ends_with(".jpg")
-        || file_name.ends_with(".jpeg")
-        || file_name.ends_with(".gif")
+    let valid_extensions = ["jpg", "jpeg", "png", "gif", "bmp"];
+    valid_extensions.iter().any(|ext| file_name.ends_with(ext))
 }
 
 //método para listar os arquivos aceitos e controlar a entrada do usuário
 pub fn select_file_from_dir(dir_path: &str) -> Result<String, String> {
     let files = list_file_in_dir(dir_path)?;
+
     println!("Accepted files:");
-    files.iter().for_each(|file| println!("{}", file));
-    let input_path = loop {
-        match files.iter().find(|&file| file == &read_input_path()) {
-            Some(file) => break Ok(file.to_string()),
-            None => {
-                eprintln!("Error: The file is not in the list of accepted files. Please try again.")
-            }
+    for file in &files {
+        println!("{}", file);
+    }
+
+    loop {
+        let input = read_input_path("Enter the image you want to adjust: ");
+        if files.contains(&input) {
+            return Ok(input);
+        } else {
+            eprintln!("Error: The file is not in the list of accepted files. Please try again.");
         }
-    };
-    input_path
+    }
 }
 
 fn list_file_in_dir(dir_path: &str) -> Result<Vec<String>, String> {
@@ -36,7 +37,7 @@ fn list_file_in_dir(dir_path: &str) -> Result<Vec<String>, String> {
     let files: Vec<String> = entries
         .filter_map(Result::ok)
         .filter(|entry| entry.file_type().map(|ft| ft.is_file()).unwrap_or(false))
-        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .filter_map(|entry| entry.file_name().to_string_lossy().into_owned().into())
         .filter(|file_name| image_file_accept(file_name))
         .collect();
 
